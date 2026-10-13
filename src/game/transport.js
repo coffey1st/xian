@@ -21,6 +21,7 @@ export class InteractRegistry {
   nearest(x, y, z, maxR = 6) {
     let best = null, bd = Infinity
     for (const it of this.items) {
+      if (it.disabled) continue
       // 交互点高度：未指定时取所在地形高度（山顶等高处同样可用）
       if (it.y == null) it.y = terrainHeight(it.x, it.z)
       if (Math.abs(it.y - y) > 5) continue
@@ -35,7 +36,7 @@ export class InteractRegistry {
   nearestOfType(x, z, type, maxR) {
     let best = null, bd = maxR
     for (const it of this.items) {
-      if (it.type !== type || it.high) continue
+      if (it.disabled || it.type !== type || it.high) continue
       const d = Math.hypot(it.x - x, it.z - z)
       if (d < bd) {
         bd = d
@@ -87,6 +88,25 @@ function carModel(color, taxi) {
     b.box(-0.3, 1.85, -0.2, 0.3, 2.1, 0.2, 0xf2c230, { mat: 'neon', solid: false })
   }
   return b.build()
+}
+
+export function ebikeModel(color = 0x39c879) {
+  const b = new Builder()
+  // 方块风电单车：局部 +z 为车头。
+  for (const z of [-1.05, 1.05]) {
+    b.box(-0.13, 0.05, z - 0.48, 0.13, 1.02, z + 0.48, 0x1a1a1a, { solid: false })
+    b.box(-0.15, 0.2, z - 0.32, 0.15, 0.87, z + 0.32, 0x9ca3a8, { solid: false })
+  }
+  b.beam(0, 0.55, -1.05, 0, 1.05, 0.15, 0.12, color)
+  b.beam(0, 1.05, 0.15, 0, 0.55, 1.05, 0.12, color)
+  b.beam(0, 0.55, -1.05, 0, 0.55, 1.05, 0.1, color)
+  b.box(-0.22, 0.95, -0.2, 0.22, 1.18, 0.35, 0x222222, { solid: false })
+  b.box(-0.12, 0.55, -0.75, 0.12, 0.92, -0.15, 0x303438, { mat: 'metal', solid: false })
+  b.beam(0, 0.88, 0.72, 0, 1.48, 1.05, 0.1, 0x303438)
+  b.beam(-0.48, 1.48, 1.05, 0.48, 1.48, 1.05, 0.09, 0x303438)
+  b.box(-0.42, 1.0, 0.55, 0.42, 1.4, 1.05, color, { solid: false })
+  b.box(-0.18, 1.2, 1.06, 0.18, 1.42, 1.12, 0xfff1a8, { mat: 'lamp', solid: false })
+  return b.build(false)
 }
 
 function cruiseModel() {
@@ -169,6 +189,27 @@ export class TransportSystem {
       metroEntrance(sub, 0, 0, m.name)
       this.static.add(sub.build())
       game.interact.add({ x: m.x, z: m.z + 2, r: 4, type: 'metro', label: '进入地铁 · ' + m.name, station: m }, 'transport')
+    }
+    // ---------- 共享电单车 ----------
+    this.ebikes = []
+    const bikeStations = ['zhonglou', 'yongningmen', 'dayanta', 'datang', 'daminggong', 'huaqingchi']
+    const bikeColors = [0x39c879, 0x35a7ff, 0xffc62f]
+    for (let i = 0; i < bikeStations.length; i++) {
+      const m = METRO_STATIONS.find((s) => s.id === bikeStations[i])
+      if (!m) continue
+      const x = m.x + 6, z = m.z - 5, y = terrainHeight(x, z) + 0.04
+      const rack = new Builder(x, y, z, 0, null, 'transport')
+      rack.box(-1.2, 0, -0.25, 1.2, 0.18, 0.25, 0x555b61, { mat: 'metal', solid: false })
+      rack.box(-0.12, 0.15, -0.12, 0.12, 1.65, 0.12, 0x39c879, { solid: false })
+      rack.sign('扫码骑行', 0, 1.7, 0, 0.34, 0, { bg: '#16764a', fg: '#ffffff', px: 36 })
+      this.static.add(rack.build(false))
+      const obj = ebikeModel(bikeColors[i % bikeColors.length])
+      obj.position.set(x + 1.6, y, z)
+      obj.rotation.y = i % 2 ? Math.PI : 0
+      scene.add(obj)
+      const bike = { id: `ebike-${m.id}`, obj, station: m, heading: obj.rotation.y, speed: 0 }
+      bike.interact = game.interact.add({ x: obj.position.x, y, z: obj.position.z, r: 4, type: 'ebike', label: `共享电单车 · ${m.name}（¥5）`, bike }, 'transport')
+      this.ebikes.push(bike)
     }
     // ---------- 夜游船 ----------
     this.cruisePath = cruiseRoute()

@@ -1,6 +1,7 @@
 // 方块长安景点注册表：经纬度、图鉴文字与建模函数。
 import {
   buildBigWildGoosePagoda, bigPagodaLOD, buildBellTower, buildDrumTower, buildCityWall,
+  buildAnyuanGate, buildChangleGate, buildAndingGate,
   buildTerracottaArmy, buildTangEverbrightCity, buildMuseum, buildDamingPalace,
   buildHuaqingPalace, buildLishanGate, buildLishanPeak, buildQujiangPool, buildQujiangPier,
   buildMosque, buildMarket, buildGenericHistoric, buildModernMuseum
@@ -17,6 +18,12 @@ export const LANDMARKS = [
     desc: '鼓楼始建于明洪武十三年，与钟楼东西相望。高台重檐建筑曾以击鼓报时，“晨钟暮鼓”延续着古都生活节律。' },
   { id: 'beijingroad', name: '西安城墙·永宁门', alias: '南门', district: 'beilin', grade: 'S', lat: 34.2378, lon: 108.9468, rect: [95, 34], focusY: 24, photoR: 520, build: buildCityWall,
     desc: '西安城墙是中国现存规模最大、保存最完整的古代城垣之一。永宁门是南城门，可登城步行或骑行，俯瞰城内棋盘路网。' },
+  { id: 'anyuanmen', name: '西安城墙·安远门', alias: '北门', district: 'lianhu', grade: 'A', lat: 34.2780, lon: 108.9467, rect: [95, 34], focusY: 24, photoR: 520, build: buildAnyuanGate,
+    desc: '安远门是西安城墙北门，名字寓意安定边远，是古城南北中轴的重要门户。' },
+  { id: 'changlemen', name: '西安城墙·长乐门', alias: '东门', district: 'beilin', grade: 'A', lat: 34.2624, lon: 108.9707, rect: [34, 95], rot: Math.PI / 2, focusY: 24, photoR: 520, build: buildChangleGate,
+    desc: '长乐门是西安城墙东门，“长乐”承载着对城市长久安乐的祝愿。' },
+  { id: 'andingmen', name: '西安城墙·安定门', alias: '西门', district: 'lianhu', grade: 'A', lat: 34.2624, lon: 108.9215, rect: [34, 95], rot: Math.PI / 2, focusY: 24, photoR: 520, build: buildAndingGate,
+    desc: '安定门是西安城墙西门，门外曾通往丝绸之路方向，见证古长安的开放与交往。' },
   { id: 'beilinmuseum', name: '西安碑林博物馆', alias: '石质书库', district: 'beilin', grade: 'A', lat: 34.2506, lon: 108.9525, rect: [30, 34], focusY: 14, build: historic('西安碑林博物馆', 'calligraphy'),
     desc: '碑林以收藏、研究和陈列历代碑刻、墓志与石刻艺术著称，被誉为“石质书库”和“书法艺术故乡”。' },
   { id: 'shuyuanmen', name: '书院门文化街', district: 'beilin', grade: 'B', lat: 34.2495, lon: 108.9489, rect: [42, 20], focusY: 8, build: historic('书院门', 'calligraphy'),

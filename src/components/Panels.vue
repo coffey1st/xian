@@ -104,7 +104,7 @@
       </div>
       <div class="muted sub">旅行统计</div>
       <div class="stats">
-        <span>📷 拍照 {{ store.save.stats.photos }}</span><span>🚶 步行 {{ Math.round(store.save.stats.walk) }} 米</span><span>🚌 巴士 {{ store.save.stats.bus }}</span><span>🚇 地铁 {{ store.save.stats.metro }}</span><span>🚢 夜游 {{ store.save.stats.cruise }}</span><span>💬 聊天 {{ store.save.talked }}</span><span>📍 景点 {{ store.save.discovered.length }}/{{ lmVisible.length }}</span>
+        <span>📷 拍照 {{ store.save.stats.photos }}</span><span>🚶 步行 {{ Math.round(store.save.stats.walk) }} 米</span><span>🚌 巴士 {{ store.save.stats.bus }}</span><span>🚇 地铁 {{ store.save.stats.metro }}</span><span>🛵 电单车 {{ store.save.stats.ebike }}</span><span>🚢 夜游 {{ store.save.stats.cruise }}</span><span>💬 聊天 {{ store.save.talked }}</span><span>📍 景点 {{ store.save.discovered.length }}/{{ lmVisible.length }}</span>
       </div>
     </div>
 

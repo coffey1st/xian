@@ -175,6 +175,36 @@ export class Player {
   }
   updateRide(dt, input) {
     const r = this.ride
+    if (r.type === 'ebike') {
+      const ax = this.frozen ? { x: 0, y: 0 } : input.axis()
+      const throttle = -ax.y
+      const target = throttle >= 0 ? throttle * 18 : throttle * 6
+      r.speed += (target - r.speed) * Math.min(1, dt * (Math.abs(throttle) > 0.02 ? 4 : 2.3))
+      if (Math.abs(r.speed) < 0.04) r.speed = 0
+      const steer = ax.x * dt * (1.25 + Math.min(1, Math.abs(r.speed) / 7)) * (r.speed < -0.1 ? -1 : 1)
+      r.heading += steer
+      const distance = r.speed * dt
+      const n = Math.max(1, Math.ceil(Math.abs(distance) / 0.28))
+      for (let i = 0; i < n; i++) {
+        const dx = Math.sin(r.heading) * distance / n, dz = Math.cos(r.heading) * distance / n
+        if (!this.blocked(this.pos.x + dx, this.pos.z + dz)) {
+          this.pos.x += dx
+          this.pos.z += dz
+        } else {
+          r.speed *= -0.12
+          break
+        }
+      }
+      const ground = this.groundAt(this.pos.x, this.pos.z, this.pos.y)
+      r.obj.position.set(this.pos.x, ground + 0.04, this.pos.z)
+      r.obj.rotation.y = r.heading
+      this.pos.y = ground + 1.12
+      this.speed = Math.abs(r.speed)
+      this.modelYaw = r.heading
+      this.char.setAnim('sit')
+      this.char.update(dt, this.speed)
+      return
+    }
     if (r.free) {
       const ax = input.axis()
       const fx = Math.sin(this.camYaw - r.obj.rotation.y), fz = Math.cos(this.camYaw - r.obj.rotation.y)

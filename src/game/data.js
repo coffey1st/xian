@@ -9,7 +9,17 @@ export const FOODS = {
   persimmon: { name: '黄桂柿子饼', icon: '🟠', price: 10, desc: '以临潼火晶柿子和面，包入黄桂、核桃等馅料煎制，外皮金黄香甜。' },
   mirrorcake: { name: '镜糕', icon: '🍡', price: 8, desc: '糯米粉蒸成小圆糕，蘸上白糖、果酱与坚果碎，是回民街常见甜点。' },
   zenggao: { name: '甑糕', icon: '🍚', price: 12, desc: '糯米、红枣与蜜枣层层铺叠蒸熟，软糯香甜，适合作为一早的能量补给。' },
-  sourplum: { name: '酸梅汤', icon: '🥤', price: 8, desc: '乌梅、山楂、甘草等熬制，酸甜解腻，与西安重口小吃十分相配。' }
+  sourplum: { name: '酸梅汤', icon: '🥤', price: 8, desc: '乌梅、山楂、甘草等熬制，酸甜解腻，与西安重口小吃十分相配。' },
+  bingfeng: { name: '冰峰汽水', icon: '🍊', price: 5, desc: '橙味汽水是西安餐桌上的经典搭配，与凉皮、肉夹馍组成熟悉的“三秦套餐”。' },
+  hulatang: { name: '肉丸胡辣汤', icon: '🥘', price: 12, desc: '牛肉丸、土豆、莲花白等煎煮成浓稠早餐，胡椒香辛暖胃。' },
+  shuipen: { name: '水盆羊肉', icon: '🍲', price: 36, desc: '清亮羊肉汤中放入粉丝、香菜和葱花，配上月牙饼，鲜香不膻。' },
+  xiaochao: { name: '小炒泡馍', icon: '🌶️', price: 35, desc: '西红柿、黄花、木耳、辣椒和牛肉炒煮掀馍，酸辣醇厚。' },
+  honeyzong: { name: '黄桂蜜凉粽', icon: '🍯', price: 10, desc: '糯米粽浇上蜜桂花与玫瑰糖汁，冰凉甜糯，是夏日街头甜品。' },
+  youcha: { name: '油茶麻花', icon: '🥨', price: 9, desc: '热油茶里泡入现炸麻花，咸香绵厚，是很有关中味道的传统早点。' },
+  saozimian: { name: '岐山臊子面', icon: '🍜', price: 18, desc: '面条薄筋光，汤味酸辣鲜香，臊子、黄花、木耳与豆腐点出五色。' },
+  youta: { name: '金线油塔', icon: '🫓', price: 16, desc: '面丝层层盘绕如金线，蒸熟后松软油润，蘸蒜汁食用更清香。' },
+  fengzhengrou: { name: '粉蒸牛羊肉', icon: '🥩', price: 28, desc: '牛羊肉裹上炒香面粉与调料蒸制，绵软浓郁，配热茶恰到好处。' },
+  curedbeef: { name: '腊牛肉', icon: '🍖', price: 30, desc: '牛肉用老汤与香料卤煮，切片后肉质紧实、咸香醇厚。' }
 }
 
 export const CULTURE = {
@@ -47,8 +57,11 @@ export const SOUVENIRS = {
 
 export const SHOPS = {
   paomo: { name: '老字号泡馍馆', greet: '馍要自己慢慢掰，掰得细，煮出来才入味！', items: ['paomo', 'hulutou'] },
-  snacks: { name: '秦味小吃铺', greet: '肉夹馍、凉皮、冰峰，来一套正合适！', items: ['roujiamo', 'liangpi', 'biangbiang', 'sourplum'] },
-  nightmarket: { name: '长安夜市', greet: '华灯初上，尝口甑糕和黄桂柿子饼吧。', items: ['zenggao', 'persimmon', 'mirrorcake'] },
+  snacks: { name: '三秦套餐铺', greet: '肉夹馍、凉皮、冰峰，来一套正合适！', items: ['roujiamo', 'liangpi', 'bingfeng', 'sourplum'] },
+  noodles: { name: '关中面馆', greet: '面要现扯，辣子要热油一激才香！', items: ['biangbiang', 'saozimian', 'guokui', 'youta'] },
+  breakfast: { name: '洒金桥早市', greet: '大早上来碗胡辣汤，再就一口甑糕。', items: ['hulatang', 'youcha', 'zenggao'] },
+  halal: { name: '清真老味道', greet: '水盆、小炒、腊牛肉，都是慢火熬出来的香。', items: ['shuipen', 'xiaochao', 'curedbeef', 'fengzhengrou'] },
+  nightmarket: { name: '长安夜市', greet: '华灯初上，来点古城甜味吧。', items: ['persimmon', 'mirrorcake', 'honeyzong'] },
   souvenir: { name: '长安手信店', greet: '把一份长安记忆带回家吧！', items: ['s_silk', 's_postcard', 's_tiger'] },
   terracotta: { name: '秦俑文创店', greet: '每一尊秦俑都有自己的表情，挑一尊带走吧。', items: ['s_warrior', 's_tiger'] }
 }
@@ -68,6 +81,8 @@ export const QUESTS = [
   { id: 'q_qin', district: 'lintong', title: '临潼·秦风骊山', desc: '拍摄兵马俑、华清宫，并登上骊山', cond: { type: 'photoSet', ids: ['chenclan', 'huaqing', 'baiyun'], n: 3 }, reward: { money: 260, item: 's_warrior' } },
   { id: 'q_night', district: 'yanta', title: '曲江·长安夜未央', desc: '夜晚拍摄大唐不夜城，并乘坐一次曲江夜游', cond: { type: 'multi', parts: [{ type: 'nightPhoto', id: 'shamian' }, { type: 'cruise' }] }, reward: { money: 250, item: 's_boat' } },
   { id: 'q_food', title: '长安味道', desc: '品尝六种不同的西安美食', cond: { type: 'foodCount', n: 6 }, reward: { money: 160, item: 's_foodie' } },
+  { id: 'q_food_master', title: '碳水之都', desc: '品尝十二种西安美食', cond: { type: 'foodCount', n: 12 }, reward: { money: 320, item: 's_foodie' } },
+  { id: 'q_wall', district: 'beilin', title: '城墙·四门巡游', desc: '发现永宁门、安远门、长乐门与安定门', cond: { type: 'discoverSet', ids: ['beijingroad', 'anyuanmen', 'changlemen', 'andingmen'], n: 4 }, reward: { money: 260, item: 's_wall' } },
   { id: 'q_culture', title: '古都文化达人', desc: '解锁八项西安文化图鉴', cond: { type: 'cultureCount', n: 8 }, reward: { money: 180, item: 's_culture' } }
 ]
 
@@ -77,6 +92,7 @@ export const DAILY_POOL = [
   { id: 'd_district', title: '探索两个城区', cond: { type: 'dailyDistricts', n: 2 }, reward: { money: 60 } },
   { id: 'd_bus', title: '乘坐一次观光巴士', cond: { type: 'dailyCount', key: 'bus', n: 1 }, reward: { money: 40 } },
   { id: 'd_metro', title: '乘坐一次地铁', cond: { type: 'dailyCount', key: 'metro', n: 1 }, reward: { money: 40 } },
+  { id: 'd_ebike', title: '骑一次共享电单车', cond: { type: 'dailyCount', key: 'ebike', n: 1 }, reward: { money: 40 } },
   { id: 'd_food2', title: '品尝两种美食', cond: { type: 'dailyCount', key: 'food', n: 2 }, reward: { money: 50 } },
   { id: 'd_night', title: '拍一张长安夜景', cond: { type: 'dailyCount', key: 'nightPhoto', n: 1 }, reward: { money: 50 } },
   { id: 'd_walk', title: '步行一千米', cond: { type: 'dailyCount', key: 'walk', n: 1000 }, reward: { money: 40 } },

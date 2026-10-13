@@ -184,7 +184,7 @@ export class AudioSystem {
     this.tone(1175, 0.18, 0.075, 'sine', 0.09)
   }
   transport(kind = 'metro') {
-    const base = kind === 'bus' ? 120 : kind === 'cruise' ? 96 : 170
+    const base = kind === 'bus' ? 120 : kind === 'cruise' ? 96 : kind === 'ebike' ? 210 : 170
     this.tone(base, 0.42, 0.09, 'sawtooth')
     this.tone(base * 1.5, 0.5, 0.05, 'triangle', 0.12)
   }
@@ -198,11 +198,11 @@ export class AudioSystem {
     const t = this.ctx.currentTime
     const raining = weather === 'rain' ? 0.22 : weather === 'typhoon' ? 0.34 : 0
     const wind = weather === 'typhoon' ? 0.18 : weather === 'cloudy' ? 0.045 : night > 0.55 ? 0.025 : 0.012
-    const engine = ride === 'bus' ? 0.09 : ride === 'cruise' ? 0.055 : 0
+    const engine = ride === 'bus' ? 0.09 : ride === 'cruise' ? 0.055 : ride === 'ebike' ? 0.035 + Math.min(0.035, speed * 0.002) : 0
     this.rainGain.gain.setTargetAtTime(raining, t, 0.35)
     this.windGain.gain.setTargetAtTime(wind, t, 0.7)
     this.engineGain.gain.setTargetAtTime(engine, t, 0.25)
-    this.engine.frequency.setTargetAtTime(ride === 'bus' ? 48 + Math.min(10, speed) : 39, t, 0.2)
+    this.engine.frequency.setTargetAtTime(ride === 'bus' ? 48 + Math.min(10, speed) : ride === 'ebike' ? 84 + Math.min(70, speed * 4) : 39, t, 0.2)
   }
 
   dispose() {

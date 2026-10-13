@@ -359,6 +359,7 @@ export class Game {
       const st = this.transport.stops[this.transport.busStopIdx]
       h.ride = this.transport.busWait > 0 ? `🚌 停靠 ${st.name}站 · 按 E 下车` : '🚌 观光巴士行驶中…'
     } else if (p.ride && p.ride.type === 'cruise') h.ride = '🚢 曲江夜游中 · WASD 在甲板走动 · C 拍照 · E 提前下船'
+    else if (p.ride && p.ride.type === 'ebike') h.ride = `🛵 共享电单车 · ${Math.round((p.ride.speed || 0) * 1.8)} km/h · WASD 骑行 · E 停车`
     else if (p.scripted && this.rideLabel) h.ride = this.rideLabel()
     else h.ride = null
     // 每30秒保存位置
@@ -531,6 +532,7 @@ export class Game {
         if (this.transport.busWait > 0) this.alightBus()
         else toast('巴士行驶中，请到站后再下车')
       } else if (p.ride.type === 'cruise') this.endCruise()
+      else if (p.ride.type === 'ebike') this.endEBike()
       return
     }
     const t = this.currentInteract
@@ -581,6 +583,15 @@ export class Game {
         return
       case 'bus':
         return this.busInteract(it.stop)
+      case 'ebike':
+        return this.dialog({
+          title: '🛵 共享电动自行车', text: `扫码解锁 ${it.bike.station.name} 附近车辆。\nW/S 加速或倒车，A/D 转向，E 安全停车。请遵守交通规则。`,
+          options: [{ label: '扫码骑行（¥5）', action: () => this.rentEBike(it) }, { label: '取消', action: () => this.closeDialog() }]
+        })
+      case 'wallUp':
+        return this.enterWall(it)
+      case 'wallDown':
+        return this.leaveWall(it)
       case 'cruise':
         return this.dialog({
           title: '🚢 曲江夜游', text: `从${PIERS.find((x) => x.id === it.pier).name}登船，环游曲江池，欣赏亭台、水岸与盛唐灯影。\n船票 ¥60（夜晚体验最佳）。`,
@@ -674,6 +685,56 @@ export class Game {
     p.teleport(st.wx, 0.2, st.wz, p.camYaw)
     p.pos.y = p.groundAt(st.wx, st.wz, 3)
     toast(`已在 ${st.name}站 下车`)
+  }
+  rentEBike(it) {
+    this.closeDialog()
+    if (store.save.money < 5) return toast('解锁电单车需要 ¥5', 'warn')
+    store.save.money -= 5
+    const bike = it.bike
+    it.disabled = true
+    bike.obj.position.set(this.player.pos.x, this.player.groundAt(this.player.pos.x, this.player.pos.z, this.player.pos.y) + 0.04, this.player.pos.z)
+    this.player.ride = { type: 'ebike', obj: bike.obj, bike, heading: bike.heading || this.player.modelYaw, speed: 0 }
+    this.player.view = 'third'
+    this.player.camDist = 7
+    events.count('ebike')
+    this.audio.transport('ebike')
+    this.triggerEffect('reward', 500)
+    toast('🛵 已解锁（¥5）· WASD 骑行 · E 停车')
+  }
+  endEBike() {
+    const ride = this.player.ride
+    if (!ride || ride.type !== 'ebike') return
+    const bike = ride.bike
+    bike.heading = ride.heading
+    bike.speed = 0
+    const x = bike.obj.position.x + Math.cos(ride.heading) * 1.35
+    const z = bike.obj.position.z - Math.sin(ride.heading) * 1.35
+    this.player.ride = null
+    this.player.teleport(x, terrainHeight(x, z) + 0.3, z, this.player.camYaw)
+    this.player.pos.y = this.player.groundAt(x, z, 4)
+    bike.interact.x = bike.obj.position.x
+    bike.interact.y = bike.obj.position.y
+    bike.interact.z = bike.obj.position.z
+    bike.interact.label = '继续骑行共享电单车（¥5）'
+    bike.interact.disabled = false
+    this.audio.transport('ebike')
+    toast('🅿️ 已停车锁车，感谢文明骑行')
+  }
+  enterWall(it) {
+    const q = it.topLocal
+    const target = this.landmarks.toWorld(it.landmark, q.x, q.y, q.z)
+    events.view('wallride:' + it.landmark)
+    this.audio.transport('elevator')
+    this.fade('🏰 登上西安城墙…', () => {
+      this.player.teleport(target.x, target.y, target.z, this.player.camYaw)
+      banner('登临明城墙', '漫步青砖马道，俯瞰千年古都')
+      toast('📷 可沿城墙行走拍照，靠近出口按 E 下城')
+    })
+  }
+  leaveWall(it) {
+    const q = it.groundLocal
+    const target = this.landmarks.toWorld(it.landmark, q.x, q.y, q.z)
+    this.fade('🏰 沿马道下城…', () => this.player.teleport(target.x, target.y, target.z, this.player.camYaw))
   }
   // ---------- 夜游 ----------
   startCruise(it) {

@@ -70,18 +70,27 @@ export function buildDrumTower(b, ctx) {
   ctx.interact({ x: 0, z: 15, r: 6, label: '聆听暮鼓', type: 'culture', id: 'drum' })
 }
 
-export function buildCityWall(b, ctx) {
+function wallGate(b, ctx, gateName, main = false) {
   paving(b, -85, -22, 85, 30)
   b.box(-90, 0, -6, 90, 12, 6, BRICK)
   b.box(-92, 12, -8, 92, 14, 8, C.greyBrick)
   for (let x = -88; x <= 88; x += 5) b.box(x, 14, -8, x + 2.5, 16, -6, BRICK, { solid: false }), b.box(x, 14, 6, x + 2.5, 16, 8, BRICK, { solid: false })
   b.box(-7, 0, -7, 7, 8, 7, 0x242424, { solid: false })
-  tangHall(b, 0, 0, 30, 18, 25, '永宁门')
+  tangHall(b, 0, 0, 30, 18, 25, gateName)
   b.gableRoof(-18, 18, -13, 13, 25, 5, ROOF, { over: 1 })
+  // 城墙根的马道阶梯，玩家也可以直接通过交互登城。
+  for (let i = 0; i < 14; i++) b.box(24, i, 20 - i, 31, i + 1, 22 - i, C.greyBrick)
+  for (const x of [-65, -42, 42, 65]) lamp(b, x, 14.1, 0, 3.2, 'old')
   ctx.platform({ x0: -88, z0: -7, x1: 88, z1: 7, y: 14.2 })
-  ctx.interact({ x: 20, y: 14.4, z: 0, r: 8, label: '骑行明城墙', type: 'view', id: 'wallride' })
-  ctx.interact({ x: 0, z: 20, r: 7, label: '永宁门入城仪式', type: 'culture', id: 'citywall' })
+  ctx.interact({ x: 20, z: 20, r: 7, label: `登${gateName}城墙`, type: 'wallUp', topLocal: { x: 20, y: 14.4, z: 0 } })
+  ctx.interact({ x: 20, y: 14.4, z: 0, r: 8, label: `从${gateName}下城`, type: 'wallDown', groundLocal: { x: 20, y: 0.3, z: 20 } })
+  ctx.interact({ x: 0, z: 20, r: 7, label: main ? '永宁门入城仪式' : `了解${gateName}`, type: 'culture', id: 'citywall' })
 }
+
+export function buildCityWall(b, ctx) { wallGate(b, ctx, '永宁门', true) }
+export function buildAnyuanGate(b, ctx) { wallGate(b, ctx, '安远门') }
+export function buildChangleGate(b, ctx) { wallGate(b, ctx, '长乐门') }
+export function buildAndingGate(b, ctx) { wallGate(b, ctx, '安定门') }
 
 export function buildTerracottaArmy(b, ctx) {
   paving(b, -55, -42, 55, 45)
@@ -179,17 +188,20 @@ export function buildMosque(b, ctx) {
 }
 
 export function buildMarket(b, ctx) {
-  paving(b, -52, -18, 52, 20, 0, 0xa98f6c)
-  const names = ['泡馍馆', '肉夹馍', '凉皮', '镜糕', '酸梅汤', '柿子饼']
+  paving(b, -72, -18, 72, 20, 0, 0xa98f6c)
+  const names = ['泡馍馆', '胡辣汤', '肉夹馍', '凉皮冰峰', 'biangbiang 面', '水盆羊肉', '腊牛肉', '镜糕凉粽', '柿子饼']
   for (let i = 0; i < names.length; i++) {
-    const x = -44 + i * 17.5
+    const x = -64 + i * 16
     b.box(x - 7, 0, -12, x + 7, 8, 0xceb083)
     b.sign(names[i], x, 5.5, -12.1, 0.65, Math.PI, { bg: '#7b2c25', fg: '#ffd98c' })
   }
-  ctx.interact({ x: -35, z: -8, r: 4, label: '老孙家泡馍', type: 'shop', shop: 'paomo' })
-  ctx.interact({ x: 0, z: -8, r: 4, label: '秦味小吃', type: 'shop', shop: 'snacks' })
-  ctx.interact({ x: 35, z: -8, r: 4, label: '长安手信', type: 'shop', shop: 'souvenir' })
-  ctx.crowd(0, 4, 45, 10, 22)
+  ctx.interact({ x: -58, z: -8, r: 4, label: '老字号泡馍', type: 'shop', shop: 'paomo' })
+  ctx.interact({ x: -34, z: -8, r: 4, label: '洒金桥早市', type: 'shop', shop: 'breakfast' })
+  ctx.interact({ x: -10, z: -8, r: 4, label: '三秦套餐', type: 'shop', shop: 'snacks' })
+  ctx.interact({ x: 14, z: -8, r: 4, label: '关中面馆', type: 'shop', shop: 'noodles' })
+  ctx.interact({ x: 38, z: -8, r: 4, label: '清真老味道', type: 'shop', shop: 'halal' })
+  ctx.interact({ x: 62, z: -8, r: 4, label: '长安手信', type: 'shop', shop: 'souvenir' })
+  ctx.crowd(0, 4, 62, 10, 30)
 }
 
 export function buildGenericHistoric(b, ctx, label, cultureId) {
