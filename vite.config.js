@@ -5,5 +5,8 @@ export default defineConfig({
   plugins: [vue()],
   base: './',
   server: { host: true, port: 5173 },
-  build: { chunkSizeWarningLimit: 2000 }
+  build: {
+    outDir: 'docs',
+    chunkSizeWarningLimit: 2000
+  }
 })
