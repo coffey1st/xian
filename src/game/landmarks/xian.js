@@ -219,3 +219,54 @@ export function buildModernMuseum(b, ctx, label) {
   b.sign(label, 0, 11, 20.1, 0.9, 0, { bg: '#43372d', fg: '#f3dfae' })
   ctx.interact({ x: 0, z: 25, r: 7, label, type: 'view' })
 }
+
+function glassTower(b, x, z, w, d, h, color = 0x7fa8ba) {
+  b.box(x - w / 2, 0, z - d / 2, x + w / 2, h, z + d / 2, color, { mat: 'window' })
+  b.box(x - w / 2 - 0.35, h, z - d / 2 - 0.35, x + w / 2 + 0.35, h + 1, z + d / 2 + 0.35, 0xe5edf0, { solid: false })
+  for (let y = 4; y < h; y += 6) b.box(x - w / 2 - 0.08, y, z - d / 2 - 0.08, x + w / 2 + 0.08, y + 0.18, z + d / 2 + 0.08, 0x61c5ff, { mat: 'neon', solid: false })
+}
+
+export function buildHighTechPark(b, ctx) {
+  paving(b, -62, -48, 62, 52, 0, 0x8b949a)
+  glassTower(b, -33, -12, 22, 22, 58, 0x6595ad)
+  glassTower(b, 0, -20, 26, 24, 82, 0x78a8bd)
+  glassTower(b, 35, -8, 20, 20, 48, 0x5d8299)
+  b.box(-48, 0, 20, 48, 13, 36, 0xc8ced1)
+  b.box(-45, 3, 35.8, 45, 11, 36.2, 0x6ea8c7, { mat: 'window' })
+  b.sign('西安高新 · 丝路软件城', 0, 8, 36.4, 0.95, 0, { bg: '#102f48', fg: '#78dcff', glow: true })
+  for (const x of [-52, -26, 26, 52]) roundTree(b, x, 0.1, 43, 1.1)
+  for (const x of [-48, -24, 0, 24, 48]) lamp(b, x, 0.1, 15, 7, 'modern')
+  ctx.interact({ x: 0, z: 43, r: 8, label: '漫游丝路软件城', type: 'view', id: 'hightech' })
+  ctx.crowd(0, 40, 48, 8, 18)
+}
+
+export function buildNorthStation(b, ctx) {
+  paving(b, -78, -44, 78, 52, 0, 0x9aa0a4)
+  b.box(-72, 0, -25, 72, 24, 24, 0xd6dde0)
+  b.box(-66, 5, 23.8, 66, 20, 24.2, 0x78aabd, { mat: 'window' })
+  b.gableRoof(-76, 76, -30, 28, 24, 10, 0xb7c4ca, { over: 1 })
+  b.sign('西 安 北 站  XI’AN NORTH', 0, 17, 24.4, 1.05, 0, { bg: '#e7edf0', fg: '#204662', glow: true })
+  for (let x = -60; x <= 60; x += 20) {
+    b.box(x - 0.18, 0, 34, x + 0.18, 8, 34.35, 0x69777e, { solid: false })
+    b.box(x - 4, 7.7, 33.8, x + 4, 8.1, 34.6, 0x2f86c7, { mat: 'neon', solid: false })
+  }
+  ctx.interact({ x: 0, z: 38, r: 9, label: '西安北站高铁枢纽', type: 'view', id: 'xianbei' })
+  ctx.crowd(0, 39, 60, 8, 24)
+}
+
+export function buildOlympicCenter(b, ctx) {
+  paving(b, -72, -58, 72, 60, 0, 0xa6adb1)
+  // 开放式现代体育场，外圈以发光结构梁勾勒。
+  b.box(-54, 0, -37, 54, 7, 37, 0xe1e5e7)
+  b.box(-44, 7, -28, 44, 18, 28, 0x77a9bd, { mat: 'window' })
+  b.box(-34, 7, -19, 34, 19, 19, C.asphalt)
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2
+    const x = Math.sin(a) * 58, z = Math.cos(a) * 42
+    b.beam(x, 2, z, x * 0.78, 26, z * 0.78, 0.45, i % 2 ? 0x5bc8ff : 0xff6b62, { mat: 'neon' })
+  }
+  b.sign('西安奥体中心', 0, 14, 37.4, 1.15, 0, { bg: '#173e56', fg: '#ffffff', glow: true })
+  for (const x of [-62, -42, 42, 62]) lamp(b, x, 0.1, 50, 9, 'modern')
+  ctx.interact({ x: 0, z: 48, r: 9, label: '西安奥体中心', type: 'view', id: 'olympic' })
+  ctx.crowd(0, 48, 58, 8, 24)
+}

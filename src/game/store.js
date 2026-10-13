@@ -21,7 +21,7 @@ function defaultSave() {
     flags: {},
     talked: 0,
     districts: [],
-    stats: { photos: 0, walk: 0, bus: 0, metro: 0, cruise: 0, ebike: 0 },
+    stats: { photos: 0, walk: 0, bus: 0, metro: 0, cruise: 0, bike: 0, ebike: 0, trike: 0 },
     daily: { date: '', ids: [], progress: {}, done: {} },
     settings: {
       quality: 'high', reflect: true, shadows: true, timeSpeed: 1, sensitivity: 1, showMinimap: true,

@@ -92,7 +92,8 @@ export class Player {
     }
     const ax = this.frozen ? { x: 0, y: 0 } : input.axis()
     const sprint = input.down('ShiftLeft') || input.down('ShiftRight') || input.joy.sprint
-    const maxSp = sprint ? 15 : 7
+    // 缩比城市需要更利落的移动节奏：步行与冲刺均提速。
+    const maxSp = sprint ? 22 : 10
     const fx = Math.sin(this.camYaw), fz = Math.cos(this.camYaw)
     // 相机朝向为 -forward（相机在背后），移动方向沿相机朝向
     let mx = -fx * ax.y + fz * ax.x
@@ -175,11 +176,13 @@ export class Player {
   }
   updateRide(dt, input) {
     const r = this.ride
-    if (r.type === 'ebike') {
+    if (r.type === 'ebike' || r.type === 'bike') {
       const ax = this.frozen ? { x: 0, y: 0 } : input.axis()
       const throttle = -ax.y
-      const target = throttle >= 0 ? throttle * 18 : throttle * 6
-      r.speed += (target - r.speed) * Math.min(1, dt * (Math.abs(throttle) > 0.02 ? 4 : 2.3))
+      const max = r.type === 'ebike' ? 22 : 14
+      const reverse = r.type === 'ebike' ? 7 : 4
+      const target = throttle >= 0 ? throttle * max : throttle * reverse
+      r.speed += (target - r.speed) * Math.min(1, dt * (Math.abs(throttle) > 0.02 ? (r.type === 'ebike' ? 4.5 : 3.2) : 2.3))
       if (Math.abs(r.speed) < 0.04) r.speed = 0
       const steer = ax.x * dt * (1.25 + Math.min(1, Math.abs(r.speed) / 7)) * (r.speed < -0.1 ? -1 : 1)
       r.heading += steer

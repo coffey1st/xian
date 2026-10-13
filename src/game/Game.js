@@ -20,12 +20,18 @@ import { renderBaseMap } from './map.js'
 import { audio } from './audio.js'
 
 const TOWER = { DECK_Y: 33, RESTAURANT_Y: 24, CORE: [3, 3] }
+const TRIKE_DESTS = [
+  ['huacheng', '钟楼'], ['muslimquarter', '回民街'], ['beijingroad', '永宁门'],
+  ['cantontower', '大雁塔'], ['shamian', '大唐不夜城'], ['xianbei', '西安北站'], ['olympic', '西安奥体中心']
+]
 
 export const SPAWNS = [
   { id: 'huacheng', name: '钟楼', desc: '碑林区 · 古城中心', lm: 'huacheng', off: [0, 0, 34], yaw: 0 },
   { id: 'beijingroad', name: '永宁门', desc: '碑林区 · 明城墙南门', lm: 'beijingroad', off: [0, 0, 38], yaw: 0 },
   { id: 'cantontower', name: '大雁塔', desc: '雁塔区 · 慈恩寺塔前', lm: 'cantontower', off: [0, 0, 38], yaw: 0 },
   { id: 'shamian', name: '大唐不夜城', desc: '雁塔区 · 盛唐天街', lm: 'shamian', off: [0, 0, 60], yaw: Math.PI },
+  { id: 'hightech', name: '丝路软件城', desc: '长安区 · 现代高新西安', lm: 'hightech', off: [0, 0, 70], yaw: 0 },
+  { id: 'xianbei', name: '西安北站', desc: '未央区 · 高铁枢纽', lm: 'xianbei', off: [0, 0, 52], yaw: 0 },
   { id: 'muslimquarter', name: '回民街', desc: '莲湖区 · 长安市井', lm: 'muslimquarter', off: [0, 0, 28], yaw: 0 },
   { id: 'chenclan', name: '兵马俑', desc: '临潼区 · 秦俑一号坑', lm: 'chenclan', off: [0, 0, 48], yaw: 0 },
   { id: 'huaqing', name: '华清宫', desc: '临潼区 · 骊山脚下', lm: 'huaqing', off: [0, 0, 45], yaw: 0 },
@@ -359,7 +365,8 @@ export class Game {
       const st = this.transport.stops[this.transport.busStopIdx]
       h.ride = this.transport.busWait > 0 ? `🚌 停靠 ${st.name}站 · 按 E 下车` : '🚌 观光巴士行驶中…'
     } else if (p.ride && p.ride.type === 'cruise') h.ride = '🚢 曲江夜游中 · WASD 在甲板走动 · C 拍照 · E 提前下船'
-    else if (p.ride && p.ride.type === 'ebike') h.ride = `🛵 共享电单车 · ${Math.round((p.ride.speed || 0) * 1.8)} km/h · WASD 骑行 · E 停车`
+    else if (p.ride && (p.ride.type === 'ebike' || p.ride.type === 'bike')) h.ride = `${p.ride.type === 'ebike' ? '🛵 共享电单车' : '🚲 共享单车'} · ${Math.round((p.ride.speed || 0) * 1.8)} km/h · WASD 骑行 · E 停车`
+    else if (p.ride && p.ride.type === 'trike') h.ride = '🛖 三蹦子行驶中 · 正在穿行西安街巷…'
     else if (p.scripted && this.rideLabel) h.ride = this.rideLabel()
     else h.ride = null
     // 每30秒保存位置
@@ -400,7 +407,10 @@ export class Game {
       return
     }
     if (p.ride) {
-      ui.prompt = p.ride.type === 'bus' ? (this.transport.busWait > 0 ? { label: '下车' } : null) : { label: '下船' }
+      if (p.ride.type === 'bus') ui.prompt = this.transport.busWait > 0 ? { label: '下车' } : null
+      else if (p.ride.type === 'cruise') ui.prompt = { label: '提前下船' }
+      else if (p.ride.type === 'bike' || p.ride.type === 'ebike') ui.prompt = { label: '停车锁车' }
+      else ui.prompt = null
       this.currentInteract = null
       return
     }
@@ -532,7 +542,8 @@ export class Game {
         if (this.transport.busWait > 0) this.alightBus()
         else toast('巴士行驶中，请到站后再下车')
       } else if (p.ride.type === 'cruise') this.endCruise()
-      else if (p.ride.type === 'ebike') this.endEBike()
+      else if (p.ride.type === 'ebike' || p.ride.type === 'bike') this.endBike()
+      else if (p.ride.type === 'trike') toast('🛖 三蹦子行驶中，马上就到')
       return
     }
     const t = this.currentInteract
@@ -586,8 +597,15 @@ export class Game {
       case 'ebike':
         return this.dialog({
           title: '🛵 共享电动自行车', text: `扫码解锁 ${it.bike.station.name} 附近车辆。\nW/S 加速或倒车，A/D 转向，E 安全停车。请遵守交通规则。`,
-          options: [{ label: '扫码骑行（¥5）', action: () => this.rentEBike(it) }, { label: '取消', action: () => this.closeDialog() }]
+          options: [{ label: '扫码骑电单车（¥5）', action: () => this.rentBike(it, true) }, { label: '取消', action: () => this.closeDialog() }]
         })
+      case 'bike':
+        return this.dialog({
+          title: '🚲 共享自行车', text: `扫码解锁 ${it.bike.station.name} 附近单车。\nW/S 踩车或倒车，A/D 转向，E 停车锁车。`,
+          options: [{ label: '扫码骑共享单车（¥2）', action: () => this.rentBike(it, false) }, { label: '取消', action: () => this.closeDialog() }]
+        })
+      case 'trike':
+        return this.trikeDialog(it)
       case 'wallUp':
         return this.enterWall(it)
       case 'wallDown':
@@ -644,10 +662,11 @@ export class Game {
     const from = store.ui.metroFrom
     if (from && from.id === st.id) return
     this.fade(`🚇 西安地铁 ${st.lines.join(' / ')} · 开往 ${st.name}`, async () => {
-      const y = terrainHeight(st.x, st.z)
-      this.player.teleport(st.x, y + 0.3, st.z + 6, Math.PI)
-      await this.preload(st.x, st.z + 6)
-      this.player.pos.y = this.player.groundAt(st.x, st.z + 6, y + 3)
+      const a = this.transport.stationAnchor(st)
+      const y = terrainHeight(a.x, a.z)
+      this.player.teleport(a.x, y + 0.3, a.z + 6, Math.PI)
+      await this.preload(a.x, a.z + 6)
+      this.player.pos.y = this.player.groundAt(a.x, a.z + 6, y + 3)
       events.count('metro')
       toast(`已到达 ${st.name}`)
     })
@@ -686,24 +705,26 @@ export class Game {
     p.pos.y = p.groundAt(st.wx, st.wz, 3)
     toast(`已在 ${st.name}站 下车`)
   }
-  rentEBike(it) {
+  rentBike(it, electric) {
     this.closeDialog()
-    if (store.save.money < 5) return toast('解锁电单车需要 ¥5', 'warn')
-    store.save.money -= 5
+    const price = electric ? 5 : 2
+    const type = electric ? 'ebike' : 'bike'
+    if (store.save.money < price) return toast(`解锁${electric ? '电单车' : '共享单车'}需要 ¥${price}`, 'warn')
+    store.save.money -= price
     const bike = it.bike
     it.disabled = true
     bike.obj.position.set(this.player.pos.x, this.player.groundAt(this.player.pos.x, this.player.pos.z, this.player.pos.y) + 0.04, this.player.pos.z)
-    this.player.ride = { type: 'ebike', obj: bike.obj, bike, heading: bike.heading || this.player.modelYaw, speed: 0 }
+    this.player.ride = { type, obj: bike.obj, bike, heading: bike.heading || this.player.modelYaw, speed: 0 }
     this.player.view = 'third'
     this.player.camDist = 7
-    events.count('ebike')
-    this.audio.transport('ebike')
+    events.count(type)
+    this.audio.transport(type)
     this.triggerEffect('reward', 500)
-    toast('🛵 已解锁（¥5）· WASD 骑行 · E 停车')
+    toast(`${electric ? '🛵' : '🚲'} 已扫码解锁（¥${price}）· WASD 骑行 · E 停车`)
   }
-  endEBike() {
+  endBike() {
     const ride = this.player.ride
-    if (!ride || ride.type !== 'ebike') return
+    if (!ride || (ride.type !== 'ebike' && ride.type !== 'bike')) return
     const bike = ride.bike
     bike.heading = ride.heading
     bike.speed = 0
@@ -715,10 +736,52 @@ export class Game {
     bike.interact.x = bike.obj.position.x
     bike.interact.y = bike.obj.position.y
     bike.interact.z = bike.obj.position.z
-    bike.interact.label = '继续骑行共享电单车（¥5）'
+    bike.interact.label = ride.type === 'ebike' ? '继续扫码骑电单车（¥5）' : '继续扫码骑共享单车（¥2）'
     bike.interact.disabled = false
-    this.audio.transport('ebike')
+    this.audio.transport(ride.type)
     toast('🅿️ 已停车锁车，感谢文明骑行')
+  }
+  trikeDialog(it) {
+    const from = it.trike.obj.position
+    const options = TRIKE_DESTS.map(([id, name]) => {
+      const lm = this.landmarks.byId[id]
+      if (!lm) return null
+      const distance = Math.hypot(lm.x - from.x, lm.z - from.z)
+      const fare = Math.max(8, Math.min(48, Math.ceil(distance / 160) * 4))
+      return { label: `去${name}（¥${fare}）`, action: () => this.startTrikeTrip(it, lm, name, fare) }
+    }).filter(Boolean)
+    options.push({ label: '不坐了', action: () => this.closeDialog() })
+    return this.dialog({ title: '🛖 西安三蹦子', text: '师傅：“走咧，你去哪儿？”\n路边招手即停，选好目的地后乘车穿行西安街巷。', options })
+  }
+  startTrikeTrip(it, target, name, fare) {
+    this.closeDialog()
+    if (store.save.money < fare) return toast(`打车到${name}需要 ¥${fare}`, 'warn')
+    store.save.money -= fare
+    const trip = this.transport.startTrikeTrip(it.trike, { x: target.x, z: target.z + 32, name }, fare)
+    const p = this.player
+    p.ride = { type: 'trike', obj: it.trike.obj, local: new THREE.Vector3(0, 1.28, -0.72), sit: true, faceYaw: 0, trip }
+    p.view = 'third'
+    p.camDist = 9
+    events.count('trike')
+    this.audio.transport('trike')
+    banner('🛖 三蹦子出发', `师傅正带你前往${name}`)
+  }
+  finishTrikeTrip(trip) {
+    const p = this.player
+    if (!p.ride || p.ride.type !== 'trike') return
+    this.closeDialog()
+    p.ride = null
+    const x = trip.end.x + 2, z = trip.end.z + 2
+    p.teleport(x, terrainHeight(x, z) + 0.3, z, p.camYaw)
+    p.pos.y = p.groundAt(x, z, 4)
+    const trike = trip.trike
+    trike.interact.x = trike.obj.position.x
+    trike.interact.y = trike.obj.position.y
+    trike.interact.z = trike.obj.position.z
+    trike.interact.label = `路边打车 · ${trip.target.name}三蹦子`
+    trike.interact.disabled = false
+    this.audio.transport('trike')
+    toast(`🛖 已到达${trip.target.name}，车费 ¥${trip.fare}`)
   }
   enterWall(it) {
     const q = it.topLocal

@@ -4,7 +4,8 @@ import {
   buildAnyuanGate, buildChangleGate, buildAndingGate,
   buildTerracottaArmy, buildTangEverbrightCity, buildMuseum, buildDamingPalace,
   buildHuaqingPalace, buildLishanGate, buildLishanPeak, buildQujiangPool, buildQujiangPier,
-  buildMosque, buildMarket, buildGenericHistoric, buildModernMuseum
+  buildMosque, buildMarket, buildGenericHistoric, buildModernMuseum,
+  buildHighTechPark, buildNorthStation, buildOlympicCenter
 } from './xian.js'
 
 const historic = (name, culture) => (b, ctx) => buildGenericHistoric(b, ctx, name, culture)
@@ -66,6 +67,12 @@ export const LANDMARKS = [
     desc: '秦岭野生动物园位于秦岭北麓，以山地生态为背景，展示大熊猫、金丝猴、羚牛等多种动物。' },
   { id: 'cuihuashan', name: '翠华山', alias: '终南独秀', district: 'changan', grade: 'A', lat: 33.9980, lon: 109.0020, rect: [28, 24], focusY: 14, foundation: true, build: historic('翠华山', 'qinling'),
     desc: '翠华山位于秦岭北麓，以山崩地貌、天池与峰林景观著称，是西安近郊重要的自然体验目的地。' },
+  { id: 'hightech', name: '丝路软件城', alias: '西安高新', district: 'changan', grade: 'A', lat: 34.1800, lon: 108.8750, rect: [68, 56], focusY: 48, photoR: 700, build: buildHighTechPark,
+    desc: '西安高新区的现代科技产业街区，玻璃办公楼、创新企业与新型公共空间共同组成古都的当代一面。' },
+  { id: 'xianbei', name: '西安北站', alias: '高铁枢纽', district: 'weiyang', grade: 'A', lat: 34.3760, lon: 108.9390, rect: [84, 58], focusY: 30, photoR: 760, build: buildNorthStation,
+    desc: '西安北站是西北地区重要的高铁客运枢纽，现代站房与地铁、公交共同承载新时代的长安速度。' },
+  { id: 'olympic', name: '西安奥体中心', alias: '长安之花', district: 'baqiao', grade: 'A', lat: 34.3700, lon: 109.0200, rect: [78, 66], focusY: 26, photoR: 760, build: buildOlympicCenter,
+    desc: '西安奥体中心以现代体育场馆、城市灯光与浐灞河岸空间展现西安的现代活力。' },
   { id: 'wetland', name: '浐灞国家湿地公园', district: 'baqiao', grade: 'B', lat: 34.3400, lon: 109.0600, rect: [54, 44], focusY: 8, build: museum('浐灞生态展馆'),
     desc: '浐灞水系是西安东部重要生态廊道，湿地、公园与城市公共空间共同展现古都面向自然与未来的一面。' }
 ]

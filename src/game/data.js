@@ -83,6 +83,7 @@ export const QUESTS = [
   { id: 'q_food', title: '长安味道', desc: '品尝六种不同的西安美食', cond: { type: 'foodCount', n: 6 }, reward: { money: 160, item: 's_foodie' } },
   { id: 'q_food_master', title: '碳水之都', desc: '品尝十二种西安美食', cond: { type: 'foodCount', n: 12 }, reward: { money: 320, item: 's_foodie' } },
   { id: 'q_wall', district: 'beilin', title: '城墙·四门巡游', desc: '发现永宁门、安远门、长乐门与安定门', cond: { type: 'discoverSet', ids: ['beijingroad', 'anyuanmen', 'changlemen', 'andingmen'], n: 4 }, reward: { money: 260, item: 's_wall' } },
+  { id: 'q_modern', title: '现代·新长安', desc: '探访丝路软件城、西安北站与奥体中心', cond: { type: 'discoverSet', ids: ['hightech', 'xianbei', 'olympic'], n: 3 }, reward: { money: 240 } },
   { id: 'q_culture', title: '古都文化达人', desc: '解锁八项西安文化图鉴', cond: { type: 'cultureCount', n: 8 }, reward: { money: 180, item: 's_culture' } }
 ]
 
@@ -93,6 +94,8 @@ export const DAILY_POOL = [
   { id: 'd_bus', title: '乘坐一次观光巴士', cond: { type: 'dailyCount', key: 'bus', n: 1 }, reward: { money: 40 } },
   { id: 'd_metro', title: '乘坐一次地铁', cond: { type: 'dailyCount', key: 'metro', n: 1 }, reward: { money: 40 } },
   { id: 'd_ebike', title: '骑一次共享电单车', cond: { type: 'dailyCount', key: 'ebike', n: 1 }, reward: { money: 40 } },
+  { id: 'd_bike', title: '扫码骑一次共享单车', cond: { type: 'dailyCount', key: 'bike', n: 1 }, reward: { money: 30 } },
+  { id: 'd_trike', title: '打一次三蹦子', cond: { type: 'dailyCount', key: 'trike', n: 1 }, reward: { money: 40 } },
   { id: 'd_food2', title: '品尝两种美食', cond: { type: 'dailyCount', key: 'food', n: 2 }, reward: { money: 50 } },
   { id: 'd_night', title: '拍一张长安夜景', cond: { type: 'dailyCount', key: 'nightPhoto', n: 1 }, reward: { money: 50 } },
   { id: 'd_walk', title: '步行一千米', cond: { type: 'dailyCount', key: 'walk', n: 1000 }, reward: { money: 40 } },

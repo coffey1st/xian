@@ -90,7 +90,7 @@ function carModel(color, taxi) {
   return b.build()
 }
 
-export function ebikeModel(color = 0x39c879) {
+function twoWheelModel(color = 0x39c879, electric = true) {
   const b = new Builder()
   // 方块风电单车：局部 +z 为车头。
   for (const z of [-1.05, 1.05]) {
@@ -101,12 +101,43 @@ export function ebikeModel(color = 0x39c879) {
   b.beam(0, 1.05, 0.15, 0, 0.55, 1.05, 0.12, color)
   b.beam(0, 0.55, -1.05, 0, 0.55, 1.05, 0.1, color)
   b.box(-0.22, 0.95, -0.2, 0.22, 1.18, 0.35, 0x222222, { solid: false })
-  b.box(-0.12, 0.55, -0.75, 0.12, 0.92, -0.15, 0x303438, { mat: 'metal', solid: false })
+  if (electric) b.box(-0.16, 0.48, -0.75, 0.16, 0.96, -0.12, 0x303438, { mat: 'metal', solid: false })
   b.beam(0, 0.88, 0.72, 0, 1.48, 1.05, 0.1, 0x303438)
   b.beam(-0.48, 1.48, 1.05, 0.48, 1.48, 1.05, 0.09, 0x303438)
-  b.box(-0.42, 1.0, 0.55, 0.42, 1.4, 1.05, color, { solid: false })
-  b.box(-0.18, 1.2, 1.06, 0.18, 1.42, 1.12, 0xfff1a8, { mat: 'lamp', solid: false })
+  b.box(-0.42, 1.0, 0.55, 0.42, electric ? 1.4 : 1.28, 1.05, color, { solid: false })
+  if (electric) b.box(-0.18, 1.2, 1.06, 0.18, 1.42, 1.12, 0xfff1a8, { mat: 'lamp', solid: false })
   return b.build(false)
+}
+
+export function bikeModel(color = 0x35a7ff) { return twoWheelModel(color, false) }
+export function ebikeModel(color = 0x39c879) { return twoWheelModel(color, true) }
+
+function sanbengziModel() {
+  const b = new Builder()
+  // 西安街头三轮摩的：局部 +z 为车头，后部带遮雨棚。
+  for (const [x, z] of [[0, 1.55], [-0.95, -1.15], [0.95, -1.15]]) {
+    b.box(x - 0.18, 0.05, z - 0.48, x + 0.18, 1.0, z + 0.48, 0x171717, { solid: false })
+    b.box(x - 0.2, 0.22, z - 0.3, x + 0.2, 0.82, z + 0.3, 0x9da4a8, { solid: false })
+  }
+  b.box(-1.05, 0.55, -1.55, 1.05, 1.25, 0.35, 0x2b8b57, { solid: false })
+  b.box(-0.95, 1.2, -1.35, 0.95, 1.65, -0.35, 0x26383a, { solid: false })
+  b.beam(0, 0.65, 0.1, 0, 1.18, 1.55, 0.16, 0x2b8b57)
+  b.box(-0.25, 1.05, 1.0, 0.25, 1.55, 1.55, 0x2b8b57, { solid: false })
+  b.beam(-0.58, 1.48, 1.2, 0.58, 1.48, 1.2, 0.1, 0x222222)
+  for (const x of [-0.95, 0.95]) b.beam(x, 1.15, -1.25, x, 2.65, -1.25, 0.08, 0x444444)
+  b.box(-1.18, 2.55, -1.65, 1.18, 2.78, 0.25, 0xffcf3d, { solid: false })
+  b.box(-1.08, 1.6, -1.55, -1.0, 2.55, 0.05, 0x6fb7c7, { mat: 'glass', solid: false })
+  b.box(1.0, 1.6, -1.55, 1.08, 2.55, 0.05, 0x6fb7c7, { mat: 'glass', solid: false })
+  b.box(-0.2, 1.22, 1.56, 0.2, 1.5, 1.64, 0xfff1a8, { mat: 'lamp', solid: false })
+  b.sign('三蹦子', 0, 2.05, -1.61, 0.38, Math.PI, { bg: '#16764a', fg: '#ffffff', px: 36 })
+  return b.build(false)
+}
+
+function stationAnchor(m) {
+  // 大型现代场馆的交通点放在广场前，避免出现在建筑内部。
+  if (m.id === 'beikezhan') return { x: m.x, z: m.z + 40 }
+  if (m.id === 'aoti') return { x: m.x, z: m.z + 50 }
+  return m
 }
 
 function cruiseModel() {
@@ -185,24 +216,35 @@ export class TransportSystem {
     }
     // ---------- 地铁 ----------
     for (const m of METRO_STATIONS) {
-      const sub = new Builder(m.x, terrainHeight(m.x, m.z), m.z, 0, world, 'transport')
+      const a = stationAnchor(m)
+      const sub = new Builder(a.x, terrainHeight(a.x, a.z), a.z, 0, world, 'transport')
       metroEntrance(sub, 0, 0, m.name)
       this.static.add(sub.build())
-      game.interact.add({ x: m.x, z: m.z + 2, r: 4, type: 'metro', label: '进入地铁 · ' + m.name, station: m }, 'transport')
+      game.interact.add({ x: a.x, z: a.z + 2, r: 4, type: 'metro', label: '进入地铁 · ' + m.name, station: m }, 'transport')
     }
-    // ---------- 共享电单车 ----------
+    // ---------- 扫码共享单车 / 电单车 ----------
+    this.bikes = []
     this.ebikes = []
-    const bikeStations = ['zhonglou', 'yongningmen', 'dayanta', 'datang', 'daminggong', 'huaqingchi']
+    const bikeStations = ['zhonglou', 'yongningmen', 'dayanta', 'datang', 'daminggong', 'huaqingchi', 'beikezhan', 'aoti']
     const bikeColors = [0x39c879, 0x35a7ff, 0xffc62f]
     for (let i = 0; i < bikeStations.length; i++) {
       const m = METRO_STATIONS.find((s) => s.id === bikeStations[i])
       if (!m) continue
-      const x = m.x + 6, z = m.z - 5, y = terrainHeight(x, z) + 0.04
+      const a = stationAnchor(m)
+      const x = a.x + 6, z = a.z - 5, y = terrainHeight(x, z) + 0.04
       const rack = new Builder(x, y, z, 0, null, 'transport')
       rack.box(-1.2, 0, -0.25, 1.2, 0.18, 0.25, 0x555b61, { mat: 'metal', solid: false })
       rack.box(-0.12, 0.15, -0.12, 0.12, 1.65, 0.12, 0x39c879, { solid: false })
-      rack.sign('扫码骑行', 0, 1.7, 0, 0.34, 0, { bg: '#16764a', fg: '#ffffff', px: 36 })
+      rack.sign('▦ 扫码', 0, 1.05, 0.14, 0.25, 0, { bg: '#ffffff', fg: '#111111', px: 38 })
+      rack.sign('单车 · 电单车', 0, 1.7, 0, 0.3, 0, { bg: '#16764a', fg: '#ffffff', px: 34 })
       this.static.add(rack.build(false))
+      const pedal = bikeModel(i % 2 ? 0x35a7ff : 0xffc62f)
+      pedal.position.set(x - 1.6, y, z)
+      pedal.rotation.y = i % 2 ? Math.PI : 0
+      scene.add(pedal)
+      const cycle = { id: `bike-${m.id}`, obj: pedal, station: m, heading: pedal.rotation.y, speed: 0 }
+      cycle.interact = game.interact.add({ x: pedal.position.x, y, z: pedal.position.z, r: 3.2, type: 'bike', label: `扫码共享单车 · ${m.name}（¥2）`, bike: cycle }, 'transport')
+      this.bikes.push(cycle)
       const obj = ebikeModel(bikeColors[i % bikeColors.length])
       obj.position.set(x + 1.6, y, z)
       obj.rotation.y = i % 2 ? Math.PI : 0
@@ -211,6 +253,23 @@ export class TransportSystem {
       bike.interact = game.interact.add({ x: obj.position.x, y, z: obj.position.z, r: 4, type: 'ebike', label: `共享电单车 · ${m.name}（¥5）`, bike }, 'transport')
       this.ebikes.push(bike)
     }
+    // ---------- 路边三蹦子打车 ----------
+    this.trikes = []
+    const trikeStations = ['zhonglou', 'yongningmen', 'dayanta', 'datang', 'beidajie', 'beikezhan', 'aoti']
+    for (let i = 0; i < trikeStations.length; i++) {
+      const m = METRO_STATIONS.find((s) => s.id === trikeStations[i])
+      if (!m) continue
+      const a = stationAnchor(m)
+      const x = a.x - 8, z = a.z + 5, y = terrainHeight(x, z) + 0.04
+      const obj = sanbengziModel()
+      obj.position.set(x, y, z)
+      obj.rotation.y = i % 2 ? Math.PI : 0
+      scene.add(obj)
+      const trike = { id: `trike-${m.id}`, obj, station: m }
+      trike.interact = game.interact.add({ x, y, z, r: 12, type: 'trike', label: `招手打车 · ${m.name}三蹦子`, trike }, 'transport')
+      this.trikes.push(trike)
+    }
+    this.trikeTrip = null
     // ---------- 夜游船 ----------
     this.cruisePath = cruiseRoute()
     this.cruiseLen = polyLength(this.cruisePath)
@@ -254,6 +313,7 @@ export class TransportSystem {
     }
     return best
   }
+  stationAnchor(station) { return stationAnchor(station) }
   busAt(stop) {
     return this.busWait > 0 && this.stops[this.busStopIdx] === stop
   }
@@ -455,10 +515,38 @@ export class TransportSystem {
       gd.position.x += u < 0.5 ? 0 : 2
     }
   }
+  startTrikeTrip(trike, target, fare) {
+    const start = trike.obj.position.clone()
+    const end = new THREE.Vector3(target.x, terrainHeight(target.x, target.z) + 0.04, target.z)
+    const distance = Math.hypot(end.x - start.x, end.z - start.z)
+    trike.interact.disabled = true
+    this.trikeTrip = { trike, target, fare, start, end, t: 0, duration: clamp(distance / 160, 4.5, 11) }
+    return this.trikeTrip
+  }
+  updateTrikeTrip(dt) {
+    const trip = this.trikeTrip
+    if (!trip) return
+    trip.t += dt
+    const k = smooth(clamp(trip.t / trip.duration, 0, 1))
+    const x = trip.start.x + (trip.end.x - trip.start.x) * k
+    const z = trip.start.z + (trip.end.z - trip.start.z) * k
+    const side = Math.sin(k * Math.PI) * Math.min(32, Math.hypot(trip.end.x - trip.start.x, trip.end.z - trip.start.z) * 0.08)
+    const dx = trip.end.x - trip.start.x, dz = trip.end.z - trip.start.z
+    const len = Math.max(1, Math.hypot(dx, dz))
+    const wx = x + (dz / len) * side, wz = z - (dx / len) * side
+    const y = terrainHeight(wx, wz) + 0.04 + Math.sin(trip.t * 9) * 0.025
+    trip.trike.obj.position.set(wx, y, wz)
+    trip.trike.obj.rotation.y = Math.atan2(dx, dz)
+    if (k >= 1) {
+      this.trikeTrip = null
+      this.game.finishTrikeTrip(trip)
+    }
+  }
   update(dt, px, pz) {
     this.updateBus(dt)
     this.updateCars(dt, px, pz)
     this.updateCable(dt)
+    this.updateTrikeTrip(dt)
     return this.updateBoat(dt)
   }
 }
