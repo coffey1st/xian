@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import { NOVICE, QUESTS, DAILY_POOL, FOODS, CULTURE, SOUVENIRS } from './data.js'
 import { mulberry32, todayKey } from './util.js'
 
-const SAVE_KEY = 'block-guangzhou-save-v1'
+const SAVE_KEY = 'block-xian-save-v1'
 
 function defaultSave() {
   return {
@@ -181,7 +181,7 @@ export function checkTasks() {
     s.novice++
     grant(t.reward, t.title)
     if (s.novice < NOVICE.length) toast(`📌 新任务：${NOVICE[s.novice].title}`, 'task', 4500)
-    else banner('🎉 广州旅行完成！', '你已成为“羊城旅行家”，继续探索更多景点吧')
+    else banner('🎉 长安旅行完成！', '你已成为“长安旅行家”，继续探索更多景点吧')
   }
   for (const q of QUESTS) {
     if (s.quests[q.id]) continue

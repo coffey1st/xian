@@ -22,7 +22,7 @@ export function banyan(b, x, y, z, s = 1, seed = 1) {
   b.boxC(x - 1 * s, y + 4 * s, z + 1, 4 * s, 1.5 * s, 4 * s, 0x4a9a40, 'leaf')
 }
 
-// 木棉（英雄树，广州市花）
+// 高冠乔木（保留通用构件名以兼容城市生成器）
 export function kapok(b, x, y, z, s = 1, bloom = true) {
   b.boxC(x, y, z, 0.7 * s, 7 * s, 0.7 * s, 0x7a6a58, 'wood')
   for (const [dx, dy, dz, w] of [[0, 5, 0, 5], [0, 7, 0, 3.6], [1.2, 6, 0.6, 2.2], [-1.2, 6.2, -0.6, 2.2]]) {
@@ -129,7 +129,7 @@ export function paving(b, x0, z0, x1, z1, y = 0, color = C.pave, h = 0.12) {
   b.box(x0, y, z0, x1, y + h, z1, color, { mat: 'stone', solid: false })
 }
 
-// ---------- 骑楼（岭南骑楼街） ----------
+// ---------- 连廊商铺街（通用历史街区构件） ----------
 // 沿局部 x 方向一排骑楼，正面朝 +z (face=1) 或 -z (face=-1)，z 为街面线（骑楼柱廊外沿）
 const QILOU_COLORS = [0xe8d7b0, 0xd9b27a, 0xc96a4a, 0xe0c9a0, 0xb8c9a8, 0xd8a8a0, 0xf0e4c8, 0xc8b48a, 0x9ab8c0, 0xe6c07a]
 export function qilouRow(b, x0, x1, zFront, face = 1, opt = {}) {
@@ -185,7 +185,7 @@ export function qilouRow(b, x0, x1, zFront, face = 1, opt = {}) {
   return shops
 }
 
-// ---------- 欧式建筑（沙面） ----------
+// ---------- 欧式历史建筑（通用构件） ----------
 export function europeanBuilding(b, cx, cz, w, d, floors, color, face = 1, style = 0, seed = 1) {
   const r = mulberry32(seed)
   const fh = 3.4
@@ -259,7 +259,7 @@ export function busShelter(b, x, z, rot = 0, name = '') {
   if (name) b.sign(name, x, 3.35, z + 0.95, 0.6, 0, { bg: '#2a6ab0', fg: '#ffffff', px: 48 })
 }
 
-// 地铁口（广州地铁红色 logo 风格）
+// 地铁口（红色 M 标识风格）
 export function metroEntrance(b, x, z, name) {
   b.box(x - 2.5, 0, z - 3, x + 2.5, 0.2, z + 3, 0x8a8a8a, { solid: false })
   b.box(x - 2.5, 0.2, z - 3, x - 2.2, 3.2, z + 3, 0xc8c8c8)

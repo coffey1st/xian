@@ -1,143 +1,115 @@
-// 游戏数据：美食、文化、纪念品、商店、任务、NPC 对白
+// 方块长安：美食、文化、纪念品、商店、任务与 NPC 对白。
 export const FOODS = {
-  dimsum: { name: '早茶·虾饺烧卖', icon: '🥟', price: 38, desc: '“叹早茶”是广州人的生活方式。一盅两件：一壶茶配虾饺、烧卖、凤爪，虾饺皮薄透亮，是点心之王。' },
-  charsiu: { name: '叉烧包', icon: '🍙', price: 10, desc: '广式早茶“四大天王”之一，面皮松软微裂，内馅是蜜汁叉烧，咸甜适中。' },
-  cheungfun: { name: '肠粉', icon: '🍜', price: 12, desc: '布拉肠粉米浆蒸得薄如蝉翼，淋上特调酱油。北京路的银记肠粉是老字号。' },
-  wonton: { name: '云吞面', icon: '🍲', price: 18, desc: '竹升打制的全蛋细面配鲜虾云吞，汤底用大地鱼与猪骨熬制，是西关的经典味道。' },
-  goose: { name: '烧鹅', icon: '🍗', price: 45, desc: '皮脆肉嫩、肥而不腻，蘸酸梅酱食用。深井烧鹅、烧腊店的招牌。' },
-  dessert: { name: '双皮奶', icon: '🍮', price: 15, desc: '起源于顺德的甜品，以水牛奶制作，表面两层奶皮，香滑可口，上下九南信是老字号。' },
-  congee: { name: '艇仔粥', icon: '🥣', price: 16, desc: '源自荔枝湾的水上人家，粥底绵滑，配鱼片、虾仁、花生、油条，“艇仔”即小船。' },
-  beef: { name: '牛杂', icon: '🍢', price: 15, desc: '萝卜炖牛杂是广州街头的经典小吃，香气四溢，配上一点芥辣更地道。' },
-  herbal: { name: '凉茶', icon: '🍵', price: 6, desc: '岭南地区湿热，广州人常饮凉茶清热祛湿，王老吉、廿四味都是常见品种。' },
-  coffee: { name: '沙面咖啡', icon: '☕', price: 32, desc: '在沙面百年欧式建筑间喝一杯咖啡，感受中西交融的广州味道。' }
+  paomo: { name: '牛羊肉泡馍', icon: '🥣', price: 38, desc: '掰馍、煮馍、配糖蒜，汤浓肉烂。自己把馍掰成黄豆大小，也是吃泡馍的重要仪式感。' },
+  roujiamo: { name: '腊汁肉夹馍', icon: '🥙', price: 15, desc: '白吉馍外酥内软，夹入长时间卤制的腊汁肉，一口下去肉香与麦香交织。' },
+  liangpi: { name: '秦镇米皮', icon: '🍜', price: 12, desc: '米皮筋薄细穰，拌入辣子油、醋与时蔬，是关中人四季都爱的清爽味道。' },
+  hulutou: { name: '葫芦头泡馍', icon: '🍲', price: 32, desc: '以猪大肠、猪肚和高汤烩馍，汤味醇厚，是西安南院门一带的传统风味。' },
+  biangbiang: { name: '油泼 biangbiang 面', icon: '🍝', price: 22, desc: '宽如裤带的手工面配辣椒面、葱花与蒜末，热油一泼，香气瞬间升腾。' },
+  guokui: { name: '锅盔', icon: '🫓', price: 10, desc: '关中传统面食，饼厚耐储、麦香扎实，可夹菜、夹肉，也能掰入汤中。' },
+  persimmon: { name: '黄桂柿子饼', icon: '🟠', price: 10, desc: '以临潼火晶柿子和面，包入黄桂、核桃等馅料煎制，外皮金黄香甜。' },
+  mirrorcake: { name: '镜糕', icon: '🍡', price: 8, desc: '糯米粉蒸成小圆糕，蘸上白糖、果酱与坚果碎，是回民街常见甜点。' },
+  zenggao: { name: '甑糕', icon: '🍚', price: 12, desc: '糯米、红枣与蜜枣层层铺叠蒸熟，软糯香甜，适合作为一早的能量补给。' },
+  sourplum: { name: '酸梅汤', icon: '🥤', price: 8, desc: '乌梅、山楂、甘草等熬制，酸甜解腻，与西安重口小吃十分相配。' }
 }
 
 export const CULTURE = {
-  opera: { name: '粤剧', icon: '🎭', desc: '粤剧是联合国人类非物质文化遗产，以粤语演唱，唱腔丰富、服饰华丽，被誉为“南国红豆”。恩宁路是粤剧艺人的聚居地。' },
-  lion: { name: '舞狮（醒狮）', icon: '🦁', desc: '广东醒狮是南狮的代表，以鼓乐伴奏，模仿狮子的喜、怒、哀、乐、动、静、惊、疑八态，逢年过节必舞，寓意驱邪纳福。' },
-  guangfu: { name: '广府文化', icon: '🏮', desc: '广府文化以广州为中心，包括粤语、粤剧、广府菜、骑楼建筑、早茶等，兼收并蓄、务实包容。' },
-  qilou: { name: '骑楼建筑', icon: '🏛️', desc: '骑楼是岭南特有的建筑形式，楼上住人、楼下开店，柱廊连成一片，可遮阳避雨，上下九与恩宁路最为完整。' },
-  huisu: { name: '陶塑与灰塑', icon: '🏺', desc: '陈家祠屋脊上的陶塑瓦脊由石湾窑烧制，人物、亭台色彩鲜艳；灰塑以石灰为主料塑造，是岭南建筑独有的装饰工艺。' },
-  wuyang: { name: '五羊传说', icon: '🐏', desc: '相传周朝时五位仙人骑着口衔稻穗的五只仙羊降临广州，祝愿此地永无饥荒，广州因此得名“羊城”“穗城”。' },
-  kapok: { name: '木棉·英雄花', icon: '🌺', desc: '木棉是广州市花，每年春天先花后叶，红花开满枝头，花大而红，被称为“英雄花”。' },
-  dragonboat: { name: '龙舟', icon: '🐉', desc: '端午扒龙舟是广州的传统，猎德村的龙舟景、车陂的龙舟赛远近闻名，“猎德龙舟”还会在珠江上“游龙探亲”。' },
-  teaculture: { name: '早茶文化', icon: '🫖', desc: '“饮早茶”不仅是吃，更是社交。斟茶时以手指轻敲桌面致谢，掀起壶盖示意添水，都是茶楼里的老规矩。' }
+  changancenter: { name: '长安中轴', icon: '🧭', desc: '钟楼位于古城中心，东南西北四条大街在此交汇。棋盘式街坊与中轴秩序延续着隋唐都城规划的城市传统。' },
+  drum: { name: '晨钟暮鼓', icon: '🥁', desc: '古代城市以钟鼓报时，清晨鸣钟、傍晚击鼓。钟楼与鼓楼共同构成西安古城最有辨识度的时间地标。' },
+  citywall: { name: '明城墙礼仪', icon: '🏯', desc: '西安城墙形成于明代，城门、箭楼、瓮城和马道组成完整防御体系。南门至今仍举行富有仪式感的入城表演。' },
+  calligraphy: { name: '碑林书法', icon: '🖌️', desc: '碑林保存大量汉唐以来碑刻，篆、隶、楷、行、草诸体俱全，是观察中国书法史与石刻艺术的珍贵现场。' },
+  terracotta: { name: '秦俑军阵', icon: '🗿', desc: '兵马俑按步兵、弩兵、车兵与骑兵等军阵排列，陶俑面容、发髻和铠甲各不相同，展现秦代军制与雕塑工艺。' },
+  tangdance: { name: '盛唐乐舞', icon: '💃', desc: '唐代长安汇聚各地音乐与舞蹈。今天的唐风演艺以鼓乐、舞姿、服饰和灯光重新想象开放包容的国际都会。' },
+  tangart: { name: '唐代艺术', icon: '🎨', desc: '唐代壁画、金银器、三彩与陶俑共同呈现自信、丰盈且兼收并蓄的时代审美。' },
+  tangpalace: { name: '唐宫礼制', icon: '👑', desc: '大明宫以宏阔中轴和分层院落承载朝会、议政与内廷生活，是理解盛唐国家礼制和建筑尺度的重要遗址。' },
+  huaqing: { name: '华清宫故事', icon: '♨️', desc: '骊山温泉被历代经营为离宫园林。唐玄宗、杨贵妃的故事与近现代历史事件，使华清宫拥有多重记忆。' },
+  silkroad: { name: '丝绸之路', icon: '🐫', desc: '长安是古代丝绸之路东方起点之一。商旅、宗教、技术、艺术和生活方式在这里相遇，塑造了多元开放的城市气质。' },
+  qin: { name: '秦制天下', icon: '⚔️', desc: '秦统一后推行郡县制、统一文字与度量衡。秦始皇陵及其陪葬体系折射出帝国治理、工艺组织和宇宙观。' },
+  qinling: { name: '秦岭生态', icon: '🐼', desc: '秦岭是中国重要地理与生态分界线，也是大熊猫、金丝猴、羚牛等珍稀动物的家园。' }
 }
 
 export const SOUVENIRS = {
-  s_tower: { name: '小蛮腰模型', icon: '🗼', desc: '登上广州塔观景平台获得。' },
-  s_lion: { name: '醒狮头挂件', icon: '🦁', desc: '观看陈家祠醒狮表演获得。' },
-  s_wood: { name: '陈家祠木雕', icon: '🪵', desc: '在陈家祠纪念品店购买或完成寻找陈家祠任务获得。' },
-  s_ram: { name: '五羊公仔', icon: '🐑', desc: '聆听五羊传说获得。' },
-  s_porcelain: { name: '广彩瓷杯', icon: '🍶', desc: '广彩是广州传统釉上彩瓷，金碧辉煌。', price: 88 },
-  s_card: { name: '羊城通纪念卡', icon: '💳', desc: '首次乘坐地铁获得。' },
-  s_fan: { name: '岭南折扇', icon: '🪭', desc: '北京路手信店有售。', price: 25 },
-  s_postcard: { name: '广州明信片套装', icon: '🖼️', desc: '北京路手信店有售。', price: 15 },
-  s_badge: { name: '广州旅行纪念章', icon: '🏅', desc: '完成新手旅行任务获得。' },
-  s_kapok: { name: '木棉书签', icon: '🔖', desc: '在中山纪念堂赏木棉获得。' },
-  s_opera: { name: '粤剧脸谱', icon: '🎭', desc: '观看粤剧表演获得。' },
-  s_cruise: { name: '珠江夜游船票', icon: '🎫', desc: '乘坐珠江夜游获得。' },
-  s_cable: { name: '白云索道票根', icon: '🚡', desc: '乘坐白云索道获得。' },
-  s_yuexiu: { name: '越秀历史徽章', icon: '📜', desc: '完成越秀区历史探索路线。' },
-  s_liwan: { name: '西关风情徽章', icon: '🏮', desc: '完成荔湾区岭南老广州任务。' },
-  s_tianhe: { name: '都市天际线徽章', icon: '🏙️', desc: '完成天河区现代都市探索。' },
-  s_haizhu: { name: '珠江夜景徽章', icon: '🌃', desc: '完成海珠区夜景模式任务。' },
-  s_baiyun: { name: '白云登高徽章', icon: '⛰️', desc: '登上白云山摩星岭。' },
-  s_panyu: { name: '欢乐番禺徽章', icon: '🎢', desc: '游览长隆。' },
-  s_nansha: { name: '滨海南沙徽章', icon: '🌊', desc: '游览南沙湿地与天后宫。' },
-  s_foodie: { name: '“食在广州”金筷子', icon: '🥢', desc: '品尝6种广州美食。' },
-  s_culture: { name: '岭南文化达人证书', icon: '📕', desc: '解锁6项广府文化。' },
-  s_tshirt: { name: '“我爱广州”T恤', icon: '👕', desc: '正佳广场有售。', price: 59 }
+  s_pagoda: { name: '大雁塔积木', icon: '🗼', desc: '登上大雁塔获得。' },
+  s_warrior: { name: '秦俑小像', icon: '🗿', desc: '参观兵马俑或在文创店购买。', price: 68 },
+  s_tiger: { name: '虎符冰箱贴', icon: '🐯', desc: '秦文化主题纪念品。', price: 28 },
+  s_wall: { name: '城墙骑行章', icon: '🏯', desc: '完成城墙探索路线获得。' },
+  s_drum: { name: '晨钟暮鼓徽章', icon: '🥁', desc: '打卡钟楼与鼓楼获得。' },
+  s_tang: { name: '唐风宫灯', icon: '🏮', desc: '完成雁塔盛唐路线获得。' },
+  s_scroll: { name: '碑林拓片卷轴', icon: '📜', desc: '完成碑林文脉路线获得。' },
+  s_silk: { name: '丝路骆驼', icon: '🐫', desc: '体验丝绸之路文化获得。', price: 35 },
+  s_cable: { name: '骊山索道票根', icon: '🚡', desc: '乘坐骊山索道获得。' },
+  s_boat: { name: '曲江夜游船票', icon: '🎫', desc: '乘坐曲江池游船获得。' },
+  s_foodie: { name: '长安金筷子', icon: '🥢', desc: '品尝六种西安美食。' },
+  s_culture: { name: '古都文化达人证', icon: '📕', desc: '解锁八项西安文化。' },
+  s_postcard: { name: '长安十二景明信片', icon: '🖼️', desc: '拍摄十张照片获得。', price: 18 },
+  s_badge: { name: '长安旅行家纪念章', icon: '🏅', desc: '完成新手旅行任务获得。' },
+  s_metro: { name: '西安地铁纪念卡', icon: '💳', desc: '首次乘坐地铁获得。' }
 }
 
 export const SHOPS = {
-  teahouse: { name: '老字号茶楼', greet: '早晨！饮咗茶未呀？一盅两件，慢慢叹～', items: ['dimsum', 'charsiu'] },
-  cheungfun: { name: '银记肠粉', greet: '靓仔靓女，要牛肉肠定虾肠呀？', items: ['cheungfun'] },
-  noodle: { name: '云吞面世家', greet: '竹升面，新鲜鲜虾云吞，细蓉一碗？', items: ['wonton'] },
-  goose: { name: '深井烧鹅', greet: '啱啱出炉嘅烧鹅，要上庄定下庄？', items: ['goose'] },
-  dessert: { name: '南信双皮奶', greet: '食碗双皮奶，甜甜蜜蜜！', items: ['dessert'] },
-  congee: { name: '艇仔粥摊', greet: '荔枝湾艇仔粥，好味又暖胃！', items: ['congee'] },
-  beef: { name: '牛杂档', greet: '萝卜牛杂，香到隔离街都闻到！', items: ['beef', 'herbal'] },
-  cafe: { name: '沙面咖啡馆', greet: '欢迎光临，来杯手冲咖啡配江景吧。', items: ['coffee'] },
-  souvenir: { name: '广州手信店', greet: '买份手信带返屋企啦！', items: ['s_fan', 's_postcard'] },
-  chenclan: { name: '陈家祠纪念品店', greet: '欢迎参观陈家祠，这里有精美的广彩和木雕。', items: ['s_porcelain', 's_wood'] },
-  mall: { name: '正佳广场', greet: '欢迎来到正佳广场！', items: ['s_tshirt', 'dimsum'] }
+  paomo: { name: '老字号泡馍馆', greet: '馍要自己慢慢掰，掰得细，煮出来才入味！', items: ['paomo', 'hulutou'] },
+  snacks: { name: '秦味小吃铺', greet: '肉夹馍、凉皮、冰峰，来一套正合适！', items: ['roujiamo', 'liangpi', 'biangbiang', 'sourplum'] },
+  nightmarket: { name: '长安夜市', greet: '华灯初上，尝口甑糕和黄桂柿子饼吧。', items: ['zenggao', 'persimmon', 'mirrorcake'] },
+  souvenir: { name: '长安手信店', greet: '把一份长安记忆带回家吧！', items: ['s_silk', 's_postcard', 's_tiger'] },
+  terracotta: { name: '秦俑文创店', greet: '每一尊秦俑都有自己的表情，挑一尊带走吧。', items: ['s_warrior', 's_tiger'] }
 }
-SOUVENIRS.s_wood.price = 120
 
-// ---------- 任务 ----------
-// cond: {type, ...}  事件驱动累计
 export const NOVICE = [
-  { id: 'n1', title: '拍摄广州塔', desc: '前往海珠区，用相机（C键）拍下广州塔“小蛮腰”。', cond: { type: 'photo', id: 'cantontower' }, reward: { money: 100 } },
-  { id: 'n2', title: '寻找陈家祠', desc: '前往荔湾区中山七路，找到岭南建筑艺术明珠——陈家祠。', cond: { type: 'discover', id: 'chenclan' }, reward: { money: 100, item: 's_wood' } },
-  { id: 'n3', title: '购买一份早茶', desc: '到上下九的老字号茶楼或正佳广场，叹一份广式早茶。', cond: { type: 'buy', id: 'dimsum' }, reward: { money: 80 } },
-  { id: 'n4', title: '完成广州旅行', desc: '乘坐广州塔电梯登上观景平台，俯瞰整座羊城。', cond: { type: 'deck' }, reward: { money: 300, item: 's_badge' } }
+  { id: 'n1', title: '拍摄大雁塔', desc: '前往雁塔区，用相机（C 键）拍下大雁塔。', cond: { type: 'photo', id: 'cantontower' }, reward: { money: 100 } },
+  { id: 'n2', title: '寻找兵马俑', desc: '前往临潼区，找到秦始皇帝陵博物院兵马俑坑。', cond: { type: 'discover', id: 'chenclan' }, reward: { money: 120, item: 's_warrior' } },
+  { id: 'n3', title: '吃一碗泡馍', desc: '到回民街老字号泡馍馆，体验自己掰馍。', cond: { type: 'buy', id: 'paomo' }, reward: { money: 80 } },
+  { id: 'n4', title: '完成长安初体验', desc: '登上大雁塔，俯瞰长安中轴。', cond: { type: 'deck' }, reward: { money: 300, item: 's_badge' } }
 ]
 
 export const QUESTS = [
-  { id: 'q_yuexiu', district: 'yuexiu', title: '越秀·历史探索路线', desc: '拍摄越秀区5处历史景点', cond: { type: 'photoSet', ids: ['zhenhai', 'wuyang', 'memorial', 'beijingroad', 'nanyue', 'sacredheart', 'liurong', 'haizhubridge', 'tianzi'], n: 5 }, reward: { money: 200, item: 's_yuexiu' } },
-  { id: 'q_liwan', district: 'liwan', title: '荔湾·岭南老广州', desc: '拍摄陈家祠、沙面、永庆坊、上下九', cond: { type: 'photoSet', ids: ['chenclan', 'shamian', 'yongqingfang', 'shangxiajiu'], n: 4 }, reward: { money: 200, item: 's_liwan' } },
-  { id: 'q_tianhe', district: 'tianhe', title: '天河·现代都市探索', desc: '拍摄西塔、东塔、体育中心、中信广场、广州东站', cond: { type: 'photoSet', ids: ['ifc', 'ctf', 'tiyuzhongxin', 'citic', 'eaststation'], n: 5 }, reward: { money: 200, item: 's_tianhe' } },
-  { id: 'q_haizhu', district: 'haizhu', title: '海珠·夜景模式', desc: '夜晚拍摄广州塔灯光秀，并乘坐一次珠江夜游', cond: { type: 'multi', parts: [{ type: 'nightPhoto', id: 'cantontower' }, { type: 'cruise' }] }, reward: { money: 250, item: 's_haizhu' } },
-  { id: 'q_baiyun', district: 'baiyun', title: '白云·登高望远', desc: '登上白云山摩星岭（可乘白云索道）远眺广州', cond: { type: 'view', id: 'peak' }, reward: { money: 200, item: 's_baiyun' } },
-  { id: 'q_panyu', district: 'panyu', title: '番禺·欢乐长隆', desc: '游览长隆欢乐世界与长隆野生动物世界', cond: { type: 'discoverSet', ids: ['chimelong', 'safari'], n: 2 }, reward: { money: 200, item: 's_panyu' } },
-  { id: 'q_nansha', district: 'nansha', title: '南沙·滨海湿地', desc: '游览南沙湿地与南沙天后宫', cond: { type: 'discoverSet', ids: ['wetland', 'tinhau'], n: 2 }, reward: { money: 200, item: 's_nansha' } },
-  { id: 'q_food', title: '食在广州', desc: '品尝6种不同的广州美食', cond: { type: 'foodCount', n: 6 }, reward: { money: 150, item: 's_foodie' } },
-  { id: 'q_culture', title: '岭南文化达人', desc: '解锁6项广府文化图鉴', cond: { type: 'cultureCount', n: 6 }, reward: { money: 150, item: 's_culture' } }
+  { id: 'q_oldcity', district: 'beilin', title: '古城·晨钟暮鼓', desc: '拍摄钟楼、鼓楼、永宁门与碑林', cond: { type: 'photoSet', ids: ['huacheng', 'drumtower', 'beijingroad', 'beilinmuseum'], n: 4 }, reward: { money: 220, item: 's_wall' } },
+  { id: 'q_lianhu', district: 'lianhu', title: '莲湖·市井与丝路', desc: '探访回民街、清真大寺与大唐西市', cond: { type: 'discoverSet', ids: ['muslimquarter', 'greatmosque', 'silkroad'], n: 3 }, reward: { money: 200, item: 's_silk' } },
+  { id: 'q_yanta', district: 'yanta', title: '雁塔·盛唐风华', desc: '拍摄大雁塔、大唐不夜城、陕历博和大唐芙蓉园', cond: { type: 'photoSet', ids: ['cantontower', 'shamian', 'shaanximuseum', 'tangparadise'], n: 4 }, reward: { money: 250, item: 's_tang' } },
+  { id: 'q_tang', district: 'weiyang', title: '未央·千宫之宫', desc: '探访大明宫并解锁唐宫礼制', cond: { type: 'discover', id: 'damingpalace' }, reward: { money: 180, item: 's_scroll' } },
+  { id: 'q_qin', district: 'lintong', title: '临潼·秦风骊山', desc: '拍摄兵马俑、华清宫，并登上骊山', cond: { type: 'photoSet', ids: ['chenclan', 'huaqing', 'baiyun'], n: 3 }, reward: { money: 260, item: 's_warrior' } },
+  { id: 'q_night', district: 'yanta', title: '曲江·长安夜未央', desc: '夜晚拍摄大唐不夜城，并乘坐一次曲江夜游', cond: { type: 'multi', parts: [{ type: 'nightPhoto', id: 'shamian' }, { type: 'cruise' }] }, reward: { money: 250, item: 's_boat' } },
+  { id: 'q_food', title: '长安味道', desc: '品尝六种不同的西安美食', cond: { type: 'foodCount', n: 6 }, reward: { money: 160, item: 's_foodie' } },
+  { id: 'q_culture', title: '古都文化达人', desc: '解锁八项西安文化图鉴', cond: { type: 'cultureCount', n: 8 }, reward: { money: 180, item: 's_culture' } }
 ]
 
 export const DAILY_POOL = [
-  { id: 'd_photo3', title: '今天拍摄3个建筑', cond: { type: 'dailyPhotos', n: 3 }, reward: { money: 60 } },
-  { id: 'd_npc5', title: '找到5个NPC聊天', cond: { type: 'dailyTalk', n: 5 }, reward: { money: 50 } },
-  { id: 'd_district', title: '探索一个新区', cond: { type: 'dailyDistricts', n: 2 }, reward: { money: 60 } },
+  { id: 'd_photo3', title: '拍摄三个景点', cond: { type: 'dailyPhotos', n: 3 }, reward: { money: 60 } },
+  { id: 'd_npc5', title: '和五位路人聊天', cond: { type: 'dailyTalk', n: 5 }, reward: { money: 50 } },
+  { id: 'd_district', title: '探索两个城区', cond: { type: 'dailyDistricts', n: 2 }, reward: { money: 60 } },
   { id: 'd_bus', title: '乘坐一次观光巴士', cond: { type: 'dailyCount', key: 'bus', n: 1 }, reward: { money: 40 } },
   { id: 'd_metro', title: '乘坐一次地铁', cond: { type: 'dailyCount', key: 'metro', n: 1 }, reward: { money: 40 } },
-  { id: 'd_food2', title: '品尝2种美食', cond: { type: 'dailyCount', key: 'food', n: 2 }, reward: { money: 50 } },
-  { id: 'd_night', title: '夜晚拍摄一张照片', cond: { type: 'dailyCount', key: 'nightPhoto', n: 1 }, reward: { money: 50 } },
-  { id: 'd_walk', title: '步行1000米', cond: { type: 'dailyCount', key: 'walk', n: 1000 }, reward: { money: 40 } },
-  { id: 'd_culture', title: '体验一项岭南文化', cond: { type: 'dailyCount', key: 'culture', n: 1 }, reward: { money: 50 } },
+  { id: 'd_food2', title: '品尝两种美食', cond: { type: 'dailyCount', key: 'food', n: 2 }, reward: { money: 50 } },
+  { id: 'd_night', title: '拍一张长安夜景', cond: { type: 'dailyCount', key: 'nightPhoto', n: 1 }, reward: { money: 50 } },
+  { id: 'd_walk', title: '步行一千米', cond: { type: 'dailyCount', key: 'walk', n: 1000 }, reward: { money: 40 } },
+  { id: 'd_culture', title: '体验一项古都文化', cond: { type: 'dailyCount', key: 'culture', n: 1 }, reward: { money: 50 } },
   { id: 'd_selfie', title: '拍一张自拍', cond: { type: 'dailyCount', key: 'selfie', n: 1 }, reward: { money: 30 } }
 ]
 
-// ---------- NPC ----------
 export const NPC_TYPES = {
-  office: { name: '上班族', weight: 3 },
-  student: { name: '学生', weight: 2 },
-  elder: { name: '老人', weight: 2 },
-  tourist: { name: '游客', weight: 3 },
-  kid: { name: '小孩', weight: 1 },
-  local: { name: '街坊', weight: 2 }
+  office: { name: '上班族', weight: 3 }, student: { name: '学生', weight: 2 }, elder: { name: '老人', weight: 2 },
+  tourist: { name: '游客', weight: 3 }, kid: { name: '小孩', weight: 1 }, local: { name: '西安街坊', weight: 2 }
 }
-
-export const SURNAMES = ['陈', '李', '黄', '梁', '何', '张', '林', '罗', '郭', '冯', '麦', '邓', '谭', '吴', '杨']
-export const NICK = { office: ['先生', '小姐', '经理', '工'], student: ['同学'], elder: ['伯', '婆婆', '叔', '姨'], tourist: ['游客'], kid: ['仔', '妹妹'], local: ['师傅', '姐', '哥'] }
+export const SURNAMES = ['张', '王', '李', '赵', '刘', '马', '杨', '郭', '高', '韩', '白', '杜', '苏', '董', '雷']
+export const NICK = { office: ['先生', '女士', '经理', '工'], student: ['同学'], elder: ['大爷', '奶奶', '叔', '姨'], tourist: ['游客'], kid: ['小朋友'], local: ['师傅', '姐', '哥'] }
 
 export const DIALOG = {
-  office: ['又要加班……今晚去珠江新城吃个宵夜先。', '地铁3号线早高峰真系“人肉罐头”！', '我喺东塔上班，落班可以睇到广州塔亮灯。', '下班一齐去饮茶？我知道一间好正嘅茶楼。', '天河CBD好多公司，机会多，压力都大。'],
-  student: ['我哋学校就喺附近，放学成日去食双皮奶！', '周末想去长隆玩过山车！', '你知唔知中山大学系孙中山先生创办嘅？', '老师话广州有两千多年历史，好劲呀！', '我最钟意喺沙面影相，好似去咗欧洲。'],
-  elder: ['以前这里都是骑楼。', '后生仔，饮咗茶未？我日日去茶楼叹早茶。', '我细个嗰阵，珠江边仲有好多艇仔。', '木棉花开就系春天到喇，英雄花呀！', '粤剧好好听㗎，得闲去恩宁路听下。', '以前海珠桥系珠江上第一座桥，好多人过桥返工。'],
-  tourist: ['第一次来广州，要去哪里玩？', '广州塔晚上的灯光秀太美了！', '听说陈家祠的屋脊雕塑超级精美。', '我要把广州的美食都吃一遍！', '珠江夜游一定要坐，夜景超赞！', '能帮我拍张照吗？谢谢～'],
-  kid: ['我想食雪糕！', '哥哥姐姐，你见过五羊石像吗？有五只羊咩咩！', '我阿爸话今晚带我去睇广州塔！', '醒狮好好睇呀，咚咚锵！'],
-  local: ['广州人讲“食咗饭未”就系打招呼。', '落雨记得带遮，广州啲天说变就变。', '台风嚟嘅时候唔好出街呀！', '呢度啲肠粉一流，记得试下！', '搭地铁去边度都好方便。', '“广州”简称“穗”，又叫羊城、花城。']
+  office: ['地铁二号线又从钟楼下面穿过去咧。', '下班去城墙根儿遛一圈，风一吹就舒服了。', '今天小寨人还是多得很。', '周末去陕历博，得早点约票。'],
+  student: ['大雁塔晚上亮灯可好看了！', '历史老师说明城墙一圈有十三公里多。', '我最喜欢在书院门逛文创店。', '放假想去秦岭看金丝猴。'],
+  elder: ['以前城墙根儿可安静咧。', '娃，泡馍得自己掰，机器切的没灵魂。', '钟楼鼓楼一亮灯，长安味儿就出来了。', '秋天去骊山看晚照，美得很。'],
+  tourist: ['第一次来西安，先登城墙还是先去大雁塔？', '兵马俑每一张脸真的都不一样。', '大唐不夜城晚上氛围太好了！', '我准备把西安面食都吃一遍。'],
+  kid: ['我想坐城墙自行车！', '兵马俑会不会晚上偷偷换队形呀？', '妈妈说带我去看大熊猫！'],
+  local: ['来了西安就甭急，慢慢转。', '肉夹馍配凉皮，再来瓶冰峰。', '西安人说“嘹咋咧”，就是特别好。', '春天风大，出门记得带件外套。']
 }
 
 export const WEATHER_LINES = {
-  rain: ['落雨喇，快啲揾地方避雨！', '回南天又嚟，成屋都湿晒。', '下雨天去茶楼饮茶最舒服。'],
-  typhoon: ['打风喇！大家快啲返屋企！', '台风信号挂咗，听日可能唔使返工？'],
-  night: ['夜晚嘅珠江好靓，你去咗夜游未？', '宵夜时间到！去食烧烤定糖水？', '广州塔又亮灯喇！']
+  rain: ['下雨咧，快到城门洞里避一避。', '青砖被雨一打，古城颜色更沉了。'],
+  typhoon: ['下雪咧！城墙和大雁塔都白了。', '雪天路滑，慢慢走。'],
+  night: ['钟楼亮灯咧，夜长安正好看。', '走，去不夜城看演出！', '夜宵来碗泡馍，暖和。']
 }
 
 export const LANDMARK_LINES = {
-  cantontower: ['广州塔又叫“小蛮腰”，600米高！', '塔顶有摩天轮，可以坐住转一圈睇全城。'],
-  chenclan: ['陈家祠系陈氏书院，好多雕刻都系手工做嘅。', '屋顶上面啲公仔叫“陶塑瓦脊”，好精细。'],
-  shamian: ['沙面以前系租界，所以有咁多欧式建筑。', '呢度啲榕树都好多年历史喇。'],
-  beijingroad: ['北京路地下有千年古道，可以隔住玻璃睇到。', '北京路系广州最旺嘅步行街之一。'],
-  shangxiajiu: ['上下九啲骑楼好有特色，落雨都唔会湿身。', '记得试下南信双皮奶！'],
-  yongqingfang: ['李小龙祖居就喺永庆坊入面！', '粤剧艺术博物馆有时会有表演。'],
-  memorial: ['纪念堂入面冇一条柱，好劲嘅设计。', '门口嗰棵木棉有三百几岁喇。'],
-  zhenhai: ['镇海楼又叫五层楼，好多年历史。'],
-  wuyang: ['五只羊口衔稻穗，祝广州五谷丰登。'],
-  baiyun: ['白云山顶睇日落，正到爆！'],
-  huacheng: ['花城广场系广州嘅城市客厅。'],
-  chimelong: ['十环过山车好刺激！', '排队要好耐，但系值得。']
+  huacheng: ['钟楼就在古城正中心，四条大街都从这里展开。'], drumtower: ['鼓楼后面就是回民街，晚上可热闹。'],
+  beijingroad: ['永宁门是西安南门，登城墙骑车很过瘾。'], cantontower: ['大雁塔和玄奘法师取经的故事有关。'],
+  shamian: ['不夜城的演出一场接一场，晚上来最有氛围。'], chenclan: ['仔细看，秦俑的发髻、铠甲和表情都不同。'],
+  muslimquarter: ['泡馍要自己掰得细细的，师傅才好煮。'], damingpalace: ['含元殿当年是大唐举行重要朝会的地方。'],
+  huaqing: ['华清宫背靠骊山，温泉从古到今都很有名。'], baiyun: ['骊山晚照是关中有名的景致。']
 }

@@ -13,13 +13,14 @@
         <rect x="0" y="300" width="1200" height="100" />
         <rect x="40" y="250" width="40" height="60" /><rect x="90" y="220" width="30" height="90" /><rect x="130" y="260" width="50" height="50" />
         <rect x="200" y="200" width="36" height="110" /><rect x="244" y="230" width="28" height="80" />
-        <!-- 西塔 -->
-        <polygon points="320,310 330,90 352,80 362,310" />
-        <!-- 广州塔（像素化小蛮腰） -->
-        <polygon points="560,310 572,240 582,170 586,120 590,170 600,240 612,310" />
-        <rect x="583" y="40" width="6" height="85" />
-        <!-- 东塔 -->
-        <rect x="430" y="70" width="44" height="240" /><rect x="436" y="55" width="32" height="20" />
+        <!-- 明城墙与永宁门 -->
+        <rect x="260" y="258" width="250" height="52" /><rect x="350" y="205" width="72" height="53" />
+        <polygon points="338,205 386,174 434,205" />
+        <!-- 大雁塔 -->
+        <polygon points="548,310 558,274 566,274 570,236 578,236 582,196 590,196 594,152 602,152 608,104 616,152 624,152 628,196 636,196 640,236 648,236 652,274 662,274 672,310" />
+        <rect x="606" y="70" width="4" height="36" />
+        <!-- 钟楼 -->
+        <rect x="440" y="245" width="84" height="65" /><polygon points="428,245 482,205 536,245" /><rect x="459" y="188" width="46" height="27" /><polygon points="450,188 482,162 514,188" />
         <rect x="660" y="180" width="40" height="130" /><rect x="710" y="230" width="34" height="80" />
         <rect x="760" y="150" width="30" height="160" /><rect x="800" y="210" width="50" height="100" />
         <rect x="870" y="250" width="70" height="60" /><rect x="950" y="200" width="30" height="110" />
@@ -35,8 +36,8 @@
     <!-- 主菜单 -->
     <div v-if="step === 'menu'" class="center">
       <div class="logo">
-        <div class="big">方块羊城</div>
-        <div class="sub">BLOCK GUANGZHOU · 广州城市观光模拟器</div>
+        <div class="big">方块长安</div>
+        <div class="sub">BLOCK XI'AN · 西安城市观光模拟器</div>
       </div>
       <div class="col">
         <button v-if="hasProfile" class="mc-btn primary wide" @click="step = 'spawn'">▶ 继续旅行（{{ store.save.profile.name }}）</button>
@@ -50,7 +51,7 @@
         <p><kbd>M</kbd> 地图 · <kbd>B</kbd> 背包 · <kbd>P</kbd> 相册 · <kbd>N</kbd> 图鉴 · <kbd>J</kbd> 任务 · <kbd>H</kbd> 帮助 · <kbd>Esc</kbd> 关闭</p>
         <p>移动端：建议横屏游玩，左侧虚拟摇杆移动，右侧滑动旋转视角，横屏时可用底部“⛶ 全屏”按钮。</p>
       </div>
-      <div class="foot muted">真实广州地图比例缩小 · 1公里 ≈ 200格 · 7大区 40+ 景点</div>
+      <div class="foot muted">西安地图比例缩小 · 1公里 ≈ 200格 · 8大区域 20+ 景点</div>
     </div>
 
     <!-- 角色创建 -->
@@ -59,7 +60,7 @@
       <div class="create-body">
         <div class="preview" ref="previewEl"></div>
         <div class="form scroll">
-          <label>名字 <input v-model="name" maxlength="10" placeholder="羊城旅行家" /></label>
+          <label>名字 <input v-model="name" maxlength="10" placeholder="长安旅行家" /></label>
           <div class="row">
             <span>性别</span>
             <button class="mc-btn small" :class="{ active: p.gender === 'm' }" @click="p.gender = 'm'">男</button>
@@ -170,7 +171,7 @@ function upload(e) {
   rd.readAsDataURL(f)
 }
 function saveChar() {
-  store.save.profile = { name: name.value.trim() || '羊城旅行家', skinParams: { ...p }, customSkin: customSkin.value }
+  store.save.profile = { name: name.value.trim() || '长安旅行家', skinParams: { ...p }, customSkin: customSkin.value }
   persist()
   if (G.game) G.game.refreshSkin()
   step.value = 'spawn'

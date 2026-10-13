@@ -1,4 +1,4 @@
-// 地图底图渲染（分区着色、珠江、道路、山体）
+// 地图底图渲染（分区着色、护城河与浐灞水系、道路、山体）
 import { RIVERS, ROADS, DISTRICTS, districtAt, rawHeight, isPark, worldBounds, BUS_ROUTE, METRO_STATIONS } from './geo.js'
 
 export function renderBaseMap() {
@@ -99,8 +99,8 @@ export function renderBaseMap() {
 export function districtLabels() {
   // 各区标签位置（大致中心）
   const pos = {
-    yuexiu: [23.133, 113.272], liwan: [23.115, 113.238], tianhe: [23.14, 113.355], haizhu: [23.085, 113.31],
-    baiyun: [23.2, 113.27], panyu: [22.96, 113.37], nansha: [22.72, 113.56], huangpu: [23.13, 113.45]
+    beilin: [34.248, 108.955], lianhu: [34.27, 108.925], xincheng: [34.27, 108.99], yanta: [34.20, 108.97],
+    weiyang: [34.34, 108.95], lintong: [34.36, 109.22], changan: [34.07, 108.91], baqiao: [34.31, 109.07]
   }
   return pos
 }

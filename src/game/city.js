@@ -11,27 +11,27 @@ const CELL = 4
 const LOT = 24
 
 // 区域风格
-const ZJXC = project(23.1215, 113.326) // 珠江新城核心
-const TIANHE_N = project(23.142, 113.33)
-const PAZHOU = project(23.099, 113.37)
+const QUJIANG = project(34.205, 108.975) // 曲江现代城区
+const HIGH_TECH = project(34.215, 108.89)
+const WEIYANG = project(34.34, 108.95)
 
 function profileAt(x, z, dist) {
   const d = districtAt(x, z)
-  const dz = Math.hypot(x - ZJXC.x, z - ZJXC.z)
+  const dz = Math.hypot(x - QUJIANG.x, z - QUJIANG.z)
   const d0 = districtAt(x, z)
-  if (dz < 400 && d0 === 'tianhe') return { type: 'cbd', dens: 0.68, hmin: 40, hmax: 135 }
-  if (Math.hypot(x - TIANHE_N.x, z - TIANHE_N.z) < 420) return { type: 'office', dens: 0.8, hmin: 25, hmax: 80 }
-  if (Math.hypot(x - PAZHOU.x, z - PAZHOU.z) < 350) return { type: 'office', dens: 0.6, hmin: 20, hmax: 70 }
+  if (dz < 380 && d0 === 'yanta') return { type: 'cbd', dens: 0.62, hmin: 28, hmax: 90 }
+  if (Math.hypot(x - HIGH_TECH.x, z - HIGH_TECH.z) < 420) return { type: 'office', dens: 0.8, hmin: 25, hmax: 90 }
+  if (Math.hypot(x - WEIYANG.x, z - WEIYANG.z) < 390) return { type: 'office', dens: 0.65, hmin: 20, hmax: 72 }
   const far = dist > 2600
   switch (d) {
-    case 'tianhe': return { type: 'resi', dens: 0.75, hmin: 18, hmax: 55 }
-    case 'yuexiu': return { type: 'old', dens: 0.85, hmin: 6, hmax: 24 }
-    case 'liwan': return { type: 'old', dens: 0.85, hmin: 5, hmax: 16 }
-    case 'haizhu': return { type: 'resi', dens: 0.75, hmin: 14, hmax: 45 }
-    case 'baiyun': return { type: 'resi', dens: 0.55, hmin: 10, hmax: 36 }
-    case 'panyu': return far ? { type: 'village', dens: 0.35, hmin: 4, hmax: 10 } : { type: 'resi', dens: 0.5, hmin: 16, hmax: 50 }
-    case 'nansha': return { type: 'village', dens: 0.3, hmin: 4, hmax: 12 }
-    case 'huangpu': return { type: 'resi', dens: 0.45, hmin: 10, hmax: 40 }
+    case 'yanta': return { type: 'resi', dens: 0.7, hmin: 16, hmax: 52 }
+    case 'beilin': return { type: 'old', dens: 0.78, hmin: 5, hmax: 18 }
+    case 'lianhu': return { type: 'old', dens: 0.82, hmin: 5, hmax: 16 }
+    case 'xincheng': return { type: 'resi', dens: 0.72, hmin: 12, hmax: 42 }
+    case 'weiyang': return { type: 'resi', dens: 0.58, hmin: 12, hmax: 44 }
+    case 'lintong': return far ? { type: 'village', dens: 0.3, hmin: 4, hmax: 10 } : { type: 'resi', dens: 0.45, hmin: 10, hmax: 30 }
+    case 'changan': return { type: 'village', dens: 0.28, hmin: 4, hmax: 12 }
+    case 'baqiao': return { type: 'resi', dens: 0.45, hmin: 10, hmax: 38 }
     default: return { type: 'resi', dens: 0.5, hmin: 10, hmax: 30 }
   }
 }
@@ -283,7 +283,7 @@ export class CityManager {
       }
       return
     }
-    // village：岭南乡村小楼 / 坡屋顶
+    // village：关中村镇小楼 / 坡屋顶
     const col = WALL_OLD[Math.floor(rnd() * WALL_OLD.length)]
     const hh = Math.max(4, h)
     b.box(x0 + 2, 0, z0 + 2, x1 - 2, hh, z1 - 2, col, 'window')
@@ -300,7 +300,7 @@ export class CityManager {
     }
     if (rnd() < 0.3) b.box(ox - w / 2 + 1, y, oz - 1, ox - w / 2 + 3, y + 1, oz + 1, 0xd0d0d0, { solid: false })
   }
-  // 行道树、路灯（木棉 + 榕树，广州特色）
+  // 行道树、路灯（国槐、银杏与松柏意象）
   buildStreets(b, x0, z0) {
     const step = 14
     for (let gx = x0 + step / 2; gx < x0 + CHUNK; gx += step)
@@ -320,9 +320,9 @@ export class CityManager {
         if (isWater(tx, tz) || this.excluded(tx, tz, 2) || terrainHeight(tx, tz) > 0) continue
         if (roadAt(tx, tz, -1.5)) continue
         const hsh = hash2(Math.floor(tx), Math.floor(tz), 3)
-        if (hsh < 0.18) kapok(b, tx, 0, tz, 0.75)
-        else if (hsh < 0.55) roundTree(b, tx, 0, tz, 0.9, 0x3d8a3a)
-        else if (hsh < 0.7) banyan(b, tx, 0, tz, 0.6, Math.floor(hsh * 100))
+        if (hsh < 0.18) pine(b, tx, 0, tz, 0.85)
+        else if (hsh < 0.62) roundTree(b, tx, 0, tz, 0.9, hsh < 0.4 ? 0x4e8a3a : 0xc59d32)
+        else if (hsh < 0.74) roundTree(b, tx, 0, tz, 0.75, 0x3d7a34)
         else if (hsh < 0.85) lamp(b, tx, 0, tz, 5)
       }
   }

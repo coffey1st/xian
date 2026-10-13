@@ -2,7 +2,7 @@
   <div v-if="ui.panel" class="overlay" @mousedown.self="close">
     <!-- 地图 -->
     <div v-if="ui.panel === 'map'" class="mc-panel panel big">
-      <div class="head"><span class="mc-title">🗺 广州地图</span><span class="muted">滚轮缩放 · 拖动平移 · 点击景点设置导航</span><button class="mc-btn small" @click="close">✕</button></div>
+      <div class="head"><span class="mc-title">🗺 西安地图</span><span class="muted">滚轮缩放 · 拖动平移 · 点击景点设置导航</span><button class="mc-btn small" @click="close">✕</button></div>
       <div class="map-body">
         <div class="map-wrap" ref="mapWrap">
           <canvas ref="mapCv" @mousedown="mapDown" @mousemove="mapMove" @mouseup="mapUp" @mouseleave="mapUp" @wheel.prevent="mapWheel" @touchstart.prevent="mapTouch" @touchmove.prevent="mapTouchMove"></canvas>
@@ -34,7 +34,7 @@
 
     <!-- 相册 -->
     <div v-else-if="ui.panel === 'album'" class="mc-panel panel big">
-      <div class="head"><span class="mc-title">📷 广州旅游相册</span><span class="muted">共 {{ photos.length }} 张</span><button class="mc-btn small" @click="close">✕</button></div>
+      <div class="head"><span class="mc-title">📷 长安旅游相册</span><span class="muted">共 {{ photos.length }} 张</span><button class="mc-btn small" @click="close">✕</button></div>
       <div class="checklist">
         <span v-for="it in lmVisible" :key="it.def.id" class="ck" :class="{ on: store.save.photographed[it.def.id] }">{{ store.save.photographed[it.def.id] ? '☑' : '☐' }} {{ known(it) ? it.def.name : '？？？' }}</span>
       </div>
@@ -42,7 +42,7 @@
         <img :src="viewing.full" />
         <div class="vbar">
           <b>{{ viewing.title }}</b><span class="muted">{{ viewing.sub }}</span>
-          <a class="mc-btn small green" :href="viewing.full" :download="'方块羊城-' + viewing.id + '.jpg'">⬇ 下载</a>
+          <a class="mc-btn small green" :href="viewing.full" :download="'方块长安-' + viewing.id + '.jpg'">⬇ 下载</a>
           <button class="mc-btn small" @click="delPhoto(viewing)">🗑 删除</button>
           <button class="mc-btn small" @click="viewing = null">返回</button>
         </div>
@@ -58,7 +58,7 @@
 
     <!-- 图鉴 -->
     <div v-else-if="ui.panel === 'dex'" class="mc-panel panel big">
-      <div class="head"><span class="mc-title">📖 广州百科图鉴</span><span class="muted">完成度 {{ dexDone }}/{{ dexTotal }}</span><button class="mc-btn small" @click="close">✕</button></div>
+      <div class="head"><span class="mc-title">📖 西安百科图鉴</span><span class="muted">完成度 {{ dexDone }}/{{ dexTotal }}</span><button class="mc-btn small" @click="close">✕</button></div>
       <div class="tabs">
         <button v-for="t in dexTabs" :key="t.id" class="mc-btn small" :class="{ active: dexTab === t.id }" @click="dexTab = t.id">{{ t.n }}</button>
       </div>
@@ -76,7 +76,7 @@
         <template v-else-if="dexTab === 'food'">
           <div v-for="(f, id) in FOODS" :key="id" class="card" :class="{ locked: !store.save.foods.includes(id) }">
             <div class="ci">{{ store.save.foods.includes(id) ? f.icon : '❔' }}</div>
-            <div class="cb"><b>{{ store.save.foods.includes(id) ? f.name : '？？？' }}</b><div class="desc">{{ store.save.foods.includes(id) ? f.desc : '在广州街头的小吃店购买以解锁。' }}</div></div>
+            <div class="cb"><b>{{ store.save.foods.includes(id) ? f.name : '？？？' }}</b><div class="desc">{{ store.save.foods.includes(id) ? f.desc : '在西安街巷的小吃店购买以解锁。' }}</div></div>
           </div>
         </template>
         <template v-else>
@@ -112,7 +112,7 @@
     <div v-else-if="ui.panel === 'tasks'" class="mc-panel panel">
       <div class="head"><span class="mc-title">📌 任务</span><button class="mc-btn small" @click="close">✕</button></div>
       <div class="scroll tasklist">
-        <div class="muted sub">新手任务 · 广州初体验</div>
+        <div class="muted sub">新手任务 · 长安初体验</div>
         <div v-for="(t, i) in NOVICE" :key="t.id" class="trow" :class="{ done: i < store.save.novice, cur: i === store.save.novice }">
           <span>{{ i < store.save.novice ? '☑' : '□' }}</span>
           <div><b>{{ t.title }}</b><div class="muted small">{{ t.desc }}</div></div>
@@ -140,7 +140,7 @@
         <div class="srow"><span>画质</span>
           <button v-for="q in qualities" :key="q.v" class="mc-btn small" :class="{ active: st.quality === q.v }" @click="st.quality = q.v; apply()">{{ q.n }}</button>
         </div>
-        <div class="srow"><span>珠江倒影</span><button class="mc-btn small" :class="{ active: st.reflect }" @click="st.reflect = !st.reflect; apply()">{{ st.reflect ? '开' : '关' }}</button>
+        <div class="srow"><span>水面倒影</span><button class="mc-btn small" :class="{ active: st.reflect }" @click="st.reflect = !st.reflect; apply()">{{ st.reflect ? '开' : '关' }}</button>
           <span>阴影</span><button class="mc-btn small" :class="{ active: st.shadows }" @click="st.shadows = !st.shadows; apply()">{{ st.shadows ? '开' : '关' }}</button>
           <span>小地图</span><button class="mc-btn small" :class="{ active: st.showMinimap }" @click="st.showMinimap = !st.showMinimap; apply()">{{ st.showMinimap ? '开' : '关' }}</button>
         </div>
@@ -156,7 +156,7 @@
         </div>
         <div class="srow"><span>鼠标灵敏度</span><input type="range" min="0.3" max="2.5" step="0.1" v-model.number="st.sensitivity" @change="apply" /> {{ st.sensitivity }}</div>
         <div class="srow"><button class="mc-btn small" @click="backToMenu">返回主菜单（修改角色/换出生点）</button></div>
-        <div class="muted small">提示：低端设备请选择“流畅”，并关闭珠江倒影与阴影。</div>
+        <div class="muted small">提示：低端设备请选择“流畅”，并关闭水面倒影与阴影。</div>
       </div>
     </div>
 
@@ -176,7 +176,7 @@
 
     <!-- 地铁 -->
     <div v-else-if="ui.panel === 'metro'" class="mc-panel panel">
-      <div class="head"><span class="mc-title">🚇 广州地铁 · 快速传送</span><button class="mc-btn small" @click="close">✕</button></div>
+      <div class="head"><span class="mc-title">🚇 西安地铁 · 快速传送</span><button class="mc-btn small" @click="close">✕</button></div>
       <div class="muted">当前车站：{{ ui.metroFrom && ui.metroFrom.name }} · 选择目的地站点</div>
       <div class="metro scroll">
         <button v-for="s in METRO_STATIONS" :key="s.id" class="mst" :disabled="ui.metroFrom && s.id === ui.metroFrom.id" @click="G.game.metroTravel(s)">
@@ -193,14 +193,14 @@
       <div class="help">
         <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动 · 鼠标旋转视角（点击画面锁定）· 右键拖动也可旋转 · <kbd>Shift</kbd> 奔跑 · <kbd>空格</kbd> 跳跃 · 滚轮 镜头远近</p>
         <p><kbd>V</kbd> 第一/第三人称 · <kbd>E</kbd> 交互（对话、乘车、购物、观看表演）· <kbd>T</kbd> 时间快进到下个时段</p>
-        <p><kbd>C</kbd> 摄影模式：<kbd>V</kbd> 切换第一人称/第三人称/自拍，<kbd>1</kbd>-<kbd>6</kbd> 切换滤镜（岭南复古、夜广州霓虹…），点击画面或 <kbd>F</kbd> 拍照，滚轮变焦</p>
+        <p><kbd>C</kbd> 摄影模式：<kbd>V</kbd> 切换第一人称/第三人称/自拍，<kbd>1</kbd>-<kbd>6</kbd> 切换滤镜（长安旧影、盛唐霓虹…），点击画面或 <kbd>F</kbd> 拍照，滚轮变焦</p>
         <p><kbd>M</kbd> 地图 · <kbd>B</kbd> 背包 · <kbd>P</kbd> 相册 · <kbd>N</kbd> 图鉴 · <kbd>J</kbd> 任务 · <kbd>Esc</kbd> 关闭面板</p>
         <p>🎯 玩法：步行探索 → 发现景点 → 拍照解锁图鉴 → 完成任务获得纪念品。</p>
-        <p>🚌 观光巴士 1 路：广州塔 ⇄ 珠江新城 ⇄ 北京路 ⇄ 陈家祠，在站台按 E 候车/上车。</p>
+        <p>🚌 长安观光巴士 1 路：钟楼 ⇄ 永宁门 ⇄ 陕历博 ⇄ 大雁塔 ⇄ 大唐不夜城 ⇄ 曲江池，在站台按 E 候车/上车。</p>
         <p>🚇 地铁：在红色“M”地铁口按 E，可快速传送至全市各站。</p>
-        <p>🚢 珠江夜游：在天字码头或广州塔码头登船；🗼 广州塔：塔底入口乘电梯登塔；🚡 白云索道：白云山南门。</p>
-        <p>🍜 美食：上下九（早茶、双皮奶、云吞面、烧鹅）、北京路（肠粉、牛杂）、荔枝湾（艇仔粥）、沙面（咖啡）。</p>
-        <p>🏮 文化：陈家祠醒狮与陶塑、永庆坊粤剧、北京路广府文化、上下九骑楼、五羊石像、中山纪念堂木棉。</p>
+        <p>🚢 曲江夜游：在南湖码头或曲江池码头登船；🗼 大雁塔：塔底入口登塔；🚡 骊山索道：华清宫东侧上山。</p>
+        <p>🍜 美食：回民街（泡馍、肉夹馍、凉皮、镜糕）、大唐不夜城（甑糕、柿子饼）、街头面馆（油泼面）。</p>
+        <p>🏮 文化：明城墙、碑林书法、秦俑军阵、盛唐乐舞、丝绸之路、唐宫礼制与秦岭生态。</p>
       </div>
     </div>
   </div>
@@ -224,7 +224,12 @@ const qualities = [{ v: 'low', n: '流畅' }, { v: 'medium', n: '均衡' }, { v:
 const timeOpts = [{ h: 7, n: '早晨' }, { h: 14, n: '下午' }, { h: 18.2, n: '黄昏' }, { h: 21, n: '夜晚' }]
 const dexTabs = [{ id: 'building', n: '🏛️ 建筑' }, { id: 'food', n: '🍜 食物' }, { id: 'culture', n: '🏮 文化' }]
 const dexTab = ref('building')
-const hintCulture = { opera: '在永庆坊粤剧艺术博物馆观看表演。', lion: '在陈家祠前广场观看醒狮。', guangfu: '北京路的广府文化源地。', qilou: '漫步上下九步行街。', huisu: '欣赏陈家祠的屋脊装饰。', wuyang: '前往越秀山五羊石像。', kapok: '中山纪念堂前的三百年木棉。', dragonboat: '在猎德大桥附近的珠江边观看龙舟。', teaculture: '在茶楼叹一次早茶。' }
+const hintCulture = {
+  changancenter: '前往钟楼，观察古城四条大街的交汇。', drum: '在鼓楼聆听晨钟暮鼓。', citywall: '从永宁门登上明城墙。',
+  calligraphy: '前往碑林博物馆或书院门。', terracotta: '走进兵马俑一号坑。', tangdance: '夜游大唐不夜城或大唐芙蓉园。',
+  tangart: '在陕西历史博物馆欣赏唐代艺术。', tangpalace: '探访大明宫含元殿遗址。', huaqing: '前往骊山脚下的华清宫。',
+  silkroad: '探访清真大寺、小雁塔或大唐西市。', qin: '前往秦始皇陵。', qinling: '到秦岭北麓亲近自然。'
+}
 
 const lmVisible = computed(() => (G.game ? G.game.landmarks.items.filter((i) => !i.def.hidden) : []))
 const known = (it) => store.save.discovered.includes(it.def.id) || !!store.save.photographed[it.def.id]
@@ -235,7 +240,7 @@ const daily = computed(() => (store.save.daily.ids || []).map((id) => {
   return { ...t, done: !!store.save.daily.done[id], p: dailyProgress(t) }
 }))
 const itemOf = (id) => FOODS[id] || SOUVENIRS[id]
-const LINE_COLORS = { '1号线': '#f3d03e', '2号线': '#00629b', '3号线': '#ecaa00', '4号线': '#00843d', '5号线': '#c5003e', '6号线': '#80225f', '7号线': '#97d700', '8号线': '#008c95', APM: '#00b5e2' }
+const LINE_COLORS = { '1号线': '#1d8a53', '2号线': '#c72535', '3号线': '#8d4d92', '4号线': '#62a746', '6号线': '#245f9e', '9号线': '#ef7b24', '14号线': '#00a2a5' }
 const lineColor = (l) => LINE_COLORS[l] || '#888'
 
 function apply() {

@@ -94,7 +94,7 @@ export function makeSkinCanvas(p) {
     px(g, shirt, 20, 20, 2, 12)
     px(g, shirt, 26, 20, 2, 12)
   } else if (p.type === 'student') {
-    // 广州校服：蓝白运动服
+    // 蓝白运动服
     px(g, '#f2f2f2', 20, 20, 8, 12)
     px(g, '#2a5ac8', 20, 20, 2, 12)
     px(g, '#2a5ac8', 26, 20, 2, 12)

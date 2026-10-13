@@ -3,8 +3,8 @@ import * as THREE from 'three'
 
 export const FILTERS = [
   { id: 'none', name: '原图' },
-  { id: 'lingnan', name: '岭南·复古胶片' },
-  { id: 'night', name: '夜广州·霓虹' },
+  { id: 'lingnan', name: '长安·复古胶片' },
+  { id: 'night', name: '盛唐·夜色霓虹' },
   { id: 'fresh', name: '清新' },
   { id: 'bw', name: '黑白' },
   { id: 'pixel', name: '像素' }
@@ -21,14 +21,14 @@ void main(){
   if (uMode > 4.5) { vec2 px = vec2(6.0) / uRes; uv = (floor(uv / px) + 0.5) * px; }
   vec3 c = texture2D(tDiffuse, uv).rgb;
   if (uMode > 0.5 && uMode < 1.5) {
-    // 岭南：暖黄 + 褪色 + 颗粒
+    // 长安旧影：暖黄 + 褪色 + 颗粒
     c = sat(c, 0.75);
     c = c * vec3(1.08, 0.98, 0.78) + vec3(0.06, 0.04, 0.0);
     c = mix(vec3(0.08,0.06,0.04), c, 0.9);
     c = pow(c, vec3(0.95));
     c += (rnd(uv * uRes) - 0.5) * 0.07;
   } else if (uMode > 1.5 && uMode < 2.5) {
-    // 夜广州：霓虹增强 + 光晕
+    // 盛唐夜色：霓虹增强 + 光晕
     vec3 glow = vec3(0.0);
     for (int i = 0; i < 8; i++) {
       float a = float(i) * 0.785;
@@ -164,7 +164,7 @@ export class PhotoSystem {
   db() {
     if (this.dbp) return this.dbp
     this.dbp = new Promise((res, rej) => {
-      const req = indexedDB.open('block-guangzhou', 1)
+      const req = indexedDB.open('block-xian', 1)
       req.onupgradeneeded = () => req.result.createObjectStore('photos', { keyPath: 'id' })
       req.onsuccess = () => res(req.result)
       req.onerror = () => rej(req.error)

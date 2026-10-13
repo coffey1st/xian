@@ -12,22 +12,23 @@ import { Player } from './player.js'
 import { Input } from './input.js'
 import { makeSkinCanvas } from './character.js'
 import { updateNightMaterials } from './materials.js'
-import { updateTowerMaterial, TOWER } from './landmarks/haizhu.js'
 import { districtAt, DISTRICTS, terrainHeight, METRO_STATIONS, PIERS } from './geo.js'
 import { store, events, toast, banner, persist, checkTasks, ensureDaily } from './store.js'
 import { SHOPS, FOODS, SOUVENIRS, CULTURE } from './data.js'
 import { formatTime, smooth, lerp, clamp } from './util.js'
 import { renderBaseMap } from './map.js'
 
+const TOWER = { DECK_Y: 33, RESTAURANT_Y: 24, CORE: [3, 3] }
+
 export const SPAWNS = [
-  { id: 'cantontower', name: '广州塔', desc: '海珠区 · 小蛮腰脚下', lm: 'cantontower', off: [0, 0, 27], yaw: 0 },
-  { id: 'huacheng', name: '珠江新城·花城广场', desc: '天河区 · 城市中轴线', lm: 'huacheng', off: [0, 0, -30], yaw: Math.PI },
-  { id: 'beijingroad', name: '北京路', desc: '越秀区 · 千年古道', lm: 'beijingroad', off: [0, 0, 50], yaw: 0 },
-  { id: 'chenclan', name: '陈家祠', desc: '荔湾区 · 岭南建筑明珠', lm: 'chenclan', off: [0, 0, 30], yaw: 0 },
-  { id: 'shamian', name: '沙面', desc: '荔湾区 · 欧陆风情', lm: 'shamian', off: [-20, 0.6, 0], yaw: Math.PI / 2 },
-  { id: 'baiyungate', name: '白云山', desc: '白云区 · 南门索道站', lm: 'baiyungate', off: [0, 0, 12], yaw: 0 },
-  { id: 'chimelong', name: '长隆', desc: '番禺区 · 欢乐世界', lm: 'chimelong', off: [0, 0, 54], yaw: 0 },
-  { id: 'wetland', name: '南沙湿地', desc: '南沙区 · 滨海湿地', lm: 'wetland', off: [0, 0.6, 0], yaw: 0 }
+  { id: 'huacheng', name: '钟楼', desc: '碑林区 · 古城中心', lm: 'huacheng', off: [0, 0, 34], yaw: 0 },
+  { id: 'beijingroad', name: '永宁门', desc: '碑林区 · 明城墙南门', lm: 'beijingroad', off: [0, 0, 38], yaw: 0 },
+  { id: 'cantontower', name: '大雁塔', desc: '雁塔区 · 慈恩寺塔前', lm: 'cantontower', off: [0, 0, 38], yaw: 0 },
+  { id: 'shamian', name: '大唐不夜城', desc: '雁塔区 · 盛唐天街', lm: 'shamian', off: [0, 0, 60], yaw: Math.PI },
+  { id: 'muslimquarter', name: '回民街', desc: '莲湖区 · 长安市井', lm: 'muslimquarter', off: [0, 0, 28], yaw: 0 },
+  { id: 'chenclan', name: '兵马俑', desc: '临潼区 · 秦俑一号坑', lm: 'chenclan', off: [0, 0, 48], yaw: 0 },
+  { id: 'huaqing', name: '华清宫', desc: '临潼区 · 骊山脚下', lm: 'huaqing', off: [0, 0, 45], yaw: 0 },
+  { id: 'baiyungate', name: '骊山', desc: '临潼区 · 索道下站', lm: 'baiyungate', off: [0, 0, 18], yaw: 0 }
 ]
 
 export class Game {
@@ -54,7 +55,7 @@ export class Game {
     this.sky.onWeatherChange = (w) => {
       const W = WEATHERS[w]
       toast(`${W.icon} 天气变化：${W.name}`, w === 'typhoon' ? 'warn' : 'info')
-      if (w === 'typhoon') banner('🌀 台风预警', '风雨较大，NPC 已陆续回家避风')
+      if (w === 'typhoon') banner('❄️ 降雪提示', '古城落雪，路面湿滑，请慢慢游览')
     }
     this.water = new WaterSystem(this.scene, s.reflect && s.quality === 'high')
     this.roads = buildRoads(this.scene)
@@ -247,7 +248,6 @@ export class Game {
     const night = skyRes.night
     updateNightMaterials(night)
     this.renderer.toneMappingExposure = 1.05 + night * 0.45
-    updateTowerMaterial(this.time)
     // 玩家
     const prevPos = p.pos.clone()
     if (!blocking) p.update(dt, this.input, this.sky)
@@ -335,7 +335,7 @@ export class Game {
     if (p.ride && p.ride.type === 'bus') {
       const st = this.transport.stops[this.transport.busStopIdx]
       h.ride = this.transport.busWait > 0 ? `🚌 停靠 ${st.name}站 · 按 E 下车` : '🚌 观光巴士行驶中…'
-    } else if (p.ride && p.ride.type === 'cruise') h.ride = '🚢 珠江夜游中 · WASD 在甲板走动 · C 拍照 · E 提前下船'
+    } else if (p.ride && p.ride.type === 'cruise') h.ride = '🚢 曲江夜游中 · WASD 在甲板走动 · C 拍照 · E 提前下船'
     else if (p.scripted && this.rideLabel) h.ride = this.rideLabel()
     else h.ride = null
     // 每30秒保存位置
@@ -461,7 +461,7 @@ export class Game {
     const night = this.sky.night > 0.5
     const names = found.map((f) => f.def.name)
     const title = names.length ? names.slice(0, 3).join(' · ') : store.ui.hud.place || d.name
-    const sub = `${d.name} · ${formatTime(this.sky.hour)} ${this.sky.period} · ${WEATHERS[this.sky.weather].name} · 方块羊城`
+    const sub = `${d.name} · ${formatTime(this.sky.hour)} ${this.sky.period} · ${WEATHERS[this.sky.weather].name} · 方块长安`
     const img = this.photo.capture(this.canvas, { title, sub })
     store.ui.flash = true
     setTimeout(() => (store.ui.flash = false), 180)
@@ -502,20 +502,20 @@ export class Game {
     switch (it.type) {
       case 'elevator':
         return this.dialog({
-          title: '广州塔 · 观光电梯', text: '高速电梯约 1 分钟直达塔顶（游戏中加速）。请选择目的楼层：',
+          title: '大雁塔 · 登塔', text: '沿塔内阶梯登临各层（游戏中快速抵达）。请选择目的地：',
           options: [
-            { label: '488米 · 露天观景平台（摩天轮）', action: () => this.rideElevator(TOWER.DECK_Y) },
-            { label: '418米 · 旋转餐厅', action: () => this.rideElevator(TOWER.RESTAURANT_Y) },
+            { label: '七层 · 长安眺望台', action: () => this.rideElevator(TOWER.DECK_Y) },
+            { label: '五层 · 玄奘文化展', action: () => this.rideElevator(TOWER.RESTAURANT_Y) },
             { label: '取消', action: () => this.closeDialog() }
           ]
         })
       case 'elevatorTop':
         return this.dialog({
-          title: '广州塔 · 观光电梯', text: '请选择目的楼层：',
+          title: '大雁塔 · 登塔', text: '请选择目的楼层：',
           options: [
             { label: '返回地面', action: () => this.rideElevator(0) },
-            { label: '488米 · 露天观景平台', action: () => this.rideElevator(TOWER.DECK_Y) },
-            { label: '418米 · 旋转餐厅', action: () => this.rideElevator(TOWER.RESTAURANT_Y) },
+            { label: '七层 · 长安眺望台', action: () => this.rideElevator(TOWER.DECK_Y) },
+            { label: '五层 · 玄奘文化展', action: () => this.rideElevator(TOWER.RESTAURANT_Y) },
             { label: '取消', action: () => this.closeDialog() }
           ]
         })
@@ -545,7 +545,7 @@ export class Game {
         return this.busInteract(it.stop)
       case 'cruise':
         return this.dialog({
-          title: '🚢 珠江夜游', text: `从${PIERS.find((x) => x.id === it.pier).name}登船，沿珠江航行，途经海珠桥、二沙岛、广州塔、猎德大桥，欣赏两岸灯光与“小蛮腰”倒影。\n船票 ¥60（夜晚体验最佳）。`,
+          title: '🚢 曲江夜游', text: `从${PIERS.find((x) => x.id === it.pier).name}登船，环游曲江池，欣赏亭台、水岸与盛唐灯影。\n船票 ¥60（夜晚体验最佳）。`,
           options: [
             { label: '购票登船（¥60）', action: () => this.startCruise(it) },
             { label: '取消', action: () => this.closeDialog() }
@@ -553,7 +553,7 @@ export class Game {
         })
       case 'cable':
         return this.dialog({
-          title: '🚡 白云索道', text: it.dir > 0 ? '乘坐索道上山，前往摩星岭方向（¥25）。' : '乘坐索道下山，返回白云山南门（¥25）。',
+          title: '🚡 骊山索道', text: it.dir > 0 ? '乘坐索道上山，前往晚照亭方向（¥25）。' : '乘坐索道下山，返回华清宫一侧（¥25）。',
           options: [{ label: '购票乘坐（¥25）', action: () => this.rideCable(it.dir) }, { label: '取消', action: () => this.closeDialog() }]
         })
     }
@@ -589,7 +589,7 @@ export class Game {
     store.ui.panel = null
     const from = store.ui.metroFrom
     if (from && from.id === st.id) return
-    this.fade(`🚇 广州地铁 ${st.lines.join(' / ')} · 开往 ${st.name}`, async () => {
+    this.fade(`🚇 西安地铁 ${st.lines.join(' / ')} · 开往 ${st.name}`, async () => {
       const y = terrainHeight(st.x, st.z)
       this.player.teleport(st.x, y + 0.3, st.z + 6, Math.PI)
       await this.preload(st.x, st.z + 6)
@@ -620,7 +620,7 @@ export class Game {
       toast('🚌 已上车（¥2）。到站后按 E 下车')
     } else {
       const eta = this.transport.busETA(stop)
-      this.dialog({ title: '🚌 观光巴士 1 路', text: `线路：广州塔 ⇄ 珠江新城 ⇄ 北京路 ⇄ 陈家祠\n下一班车预计 ${eta} 秒后到达 ${stop.name}站，请在站台稍候。`, options: [{ label: '好的', action: () => this.closeDialog() }] })
+      this.dialog({ title: '🚌 长安观光巴士 1 路', text: `线路：钟楼 ⇄ 永宁门 ⇄ 陕历博 ⇄ 大雁塔 ⇄ 大唐不夜城 ⇄ 曲江池\n下一班车预计 ${eta} 秒后到达 ${stop.name}站，请在站台稍候。`, options: [{ label: '好的', action: () => this.closeDialog() }] })
     }
   }
   alightBus() {
@@ -643,7 +643,7 @@ export class Game {
       p.ride = { type: 'cruise', obj: boat, local: new THREE.Vector3(0, 6.95, -6), free: true, bounds: [-2.7, 2.7, -9.8, 3.8] }
       p.view = 'third'
       events.count('cruise')
-      if (this.sky.night < 0.5) toast('💡 提示：夜晚乘船可以看到广州塔灯光秀（按 T 快进时间）', 'info', 6000)
+      if (this.sky.night < 0.5) toast('💡 提示：夜晚乘船可以看到曲江两岸唐风灯影（按 T 快进时间）', 'info', 6000)
     })
   }
   endCruise() {
@@ -657,10 +657,10 @@ export class Game {
       p.teleport(x, 0.5, z, p.camYaw)
       p.pos.y = p.groundAt(x, z, 3)
       this.transport.placeIdleBoat()
-      toast('感谢乘坐珠江夜游！')
+      toast('感谢乘坐曲江夜游！')
     })
   }
-  // ---------- 广州塔电梯 ----------
+  // ---------- 大雁塔登塔 ----------
   rideElevator(targetY) {
     this.closeDialog()
     const tw = this.landmarks.byId.cantontower
@@ -673,7 +673,7 @@ export class Game {
     cab.visible = true
     p.view = 'third'
     p.camDist = 7
-    this.rideLabel = () => `🛗 广州塔电梯 · ${Math.round(p.pos.y * 2.5 + 0)} 米`
+    this.rideLabel = () => `🪜 大雁塔登塔 · 第 ${Math.max(1, Math.round(p.pos.y / 5))} 层`
     p.scripted = (dt, pl) => {
       t += dt
       const k = smooth(clamp(t / dur, 0, 1))
@@ -688,8 +688,8 @@ export class Game {
         else pl.teleport(tw.x, targetY + 0.05, tw.z + 5.5, Math.PI)
         if (targetY === TOWER.DECK_Y) {
           events.deck()
-          banner('🗼 广州塔 · 488米露天观景平台', '俯瞰整个广州城！按 C 拍照')
-        } else if (targetY === TOWER.RESTAURANT_Y) banner('🍽️ 旋转餐厅', '餐厅地板缓缓旋转，一边用餐一边看全城')
+          banner('🗼 大雁塔 · 七层眺望台', '北望古城，南眺曲江！按 C 拍照')
+        } else if (targetY === TOWER.RESTAURANT_Y) banner('📜 玄奘文化展', '了解佛经沿丝绸之路抵达长安的故事')
       }
     }
   }
@@ -706,7 +706,7 @@ export class Game {
     const dur = 28
     p.view = 'third'
     p.camDist = 9
-    this.rideLabel = () => `🚡 白云索道 · 海拔 ${Math.round(p.pos.y * 2.5)} 米`
+    this.rideLabel = () => `🚡 骊山索道 · 海拔 ${Math.round(p.pos.y * 2.5)} 米`
     p.scripted = (dt, pl) => {
       u += dt / dur
       const k = dir > 0 ? u : 1 - u
@@ -721,7 +721,7 @@ export class Game {
         pl.teleport(end.x, end.y + 0.2, end.z, pl.camYaw)
         pl.pos.y = pl.groundAt(end.x, end.z, end.y + 3)
         events.count('cable')
-        toast(dir > 0 ? '已到达白云山顶 · 摩星岭' : '已到达白云山南门')
+        toast(dir > 0 ? '已到达骊山 · 晚照亭' : '已到达骊山索道下站')
       }
     }
   }

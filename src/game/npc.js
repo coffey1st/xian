@@ -75,8 +75,8 @@ export class NPCManager {
     const d = districtAt(x, z)
     const night = this.game.sky.night > 0.5
     const w = { office: 3, student: 2, elder: 2, tourist: 3, kid: 1, local: 3 }
-    if (d === 'tianhe') { w.office = 7; w.elder = 1 }
-    if (d === 'liwan' || d === 'yuexiu') { w.elder = 4; w.local = 4 }
+    if (d === 'yanta' || d === 'weiyang') { w.office = 6; w.elder = 1 }
+    if (d === 'lianhu' || d === 'beilin') { w.elder = 4; w.local = 4 }
     if (nearCrowd) w.tourist += 4
     if (night) { w.kid = 0.2; w.elder = 0.6; w.student *= 0.5 }
     const h = this.game.sky.hour

@@ -1,4 +1,4 @@
-// 天空、昼夜循环、天气（晴/阴/雨/台风）
+// 天空、昼夜循环、天气（晴/阴/雨/雪）
 import * as THREE from 'three'
 import { mulberry32, clamp, lerp } from './util.js'
 
@@ -6,7 +6,7 @@ const WEATHERS = {
   sunny: { name: '晴天', icon: '☀️', fog: 0.00075, cloud: 0.35, light: 1, rain: 0, dark: 0 },
   cloudy: { name: '阴天', icon: '☁️', fog: 0.0011, cloud: 0.8, light: 0.65, rain: 0, dark: 0.35 },
   rain: { name: '下雨', icon: '🌧️', fog: 0.0019, cloud: 1, light: 0.45, rain: 1, dark: 0.6 },
-  typhoon: { name: '台风', icon: '🌀', fog: 0.003, cloud: 1, light: 0.3, rain: 2.2, dark: 0.8 }
+  typhoon: { name: '飘雪', icon: '❄️', fog: 0.0022, cloud: 1, light: 0.5, rain: 0.9, dark: 0.55 }
 }
 export { WEATHERS }
 
@@ -206,7 +206,7 @@ export class SkySystem {
     hor.lerp(grey, wf.dark * 0.75)
     this.flashTimer -= dt
     if (wf.rain > 0.5 && this.flashTimer < 0) {
-      this.flashTimer = (this.weather === 'typhoon' ? 3 : 9) + Math.random() * 8
+      this.flashTimer = 9 + Math.random() * 8
       this.flash = 1
     }
     this.flash = Math.max(0, this.flash - dt * 4)
@@ -244,7 +244,7 @@ export class SkySystem {
     this.moon.lookAt(cam.position)
     this.moon.material.opacity = (1 - wf.dark) * clamp(-sy * 6 + 0.4, 0, 1)
     // 云
-    this.cloudT = (this.cloudT || 0) + dt * (this.weather === 'typhoon' ? 30 : 4)
+    this.cloudT = (this.cloudT || 0) + dt * 4
     this.clouds.position.x = Math.floor(cam.position.x / 70) * 70 + (this.cloudT % 70)
     this.clouds.position.z = Math.floor(cam.position.z / 70) * 70
     const cc = new THREE.Color(0xffffff).lerp(new THREE.Color(0x707680), wf.dark).lerp(new THREE.Color(0x1a1e2a), night).lerp(new THREE.Color(0xffb080), dusk * 0.5 * (1 - wf.dark))
@@ -258,7 +258,7 @@ export class SkySystem {
     this.rainU.uTime.value += dt
     this.rainU.uAlpha.value = clamp(wf.rain * 0.6, 0, 0.8)
     this.rainU.uOrigin.value.copy(cam.position)
-    const wind = this.weather === 'typhoon' ? 2.2 : 0.3
+    const wind = this.weather === 'typhoon' ? 0.15 : 0.3
     this.rainU.uWind.value.set(wind, wind * 0.4)
     return { night, dusk, flash: fl, crossedHour: Math.floor(prevHour) !== Math.floor(this.hour) }
   }

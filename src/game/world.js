@@ -1,4 +1,4 @@
-// 珠江水面（反射倒影）与道路/桥梁网格
+// 护城河、曲江池与浐灞水面（反射倒影）及道路/桥梁网格
 import * as THREE from 'three'
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js'
 import { RIVERS, ROADS, WATER_Y, BRIDGE_Y, riverAt } from './geo.js'
@@ -62,7 +62,7 @@ function riverGeometry() {
 }
 
 const WaterShader = {
-  name: 'GZWater',
+  name: 'XianWater',
   uniforms: {
     color: { value: null },
     tDiffuse: { value: null },
