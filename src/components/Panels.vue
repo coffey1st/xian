@@ -144,6 +144,12 @@
           <span>阴影</span><button class="mc-btn small" :class="{ active: st.shadows }" @click="st.shadows = !st.shadows; apply()">{{ st.shadows ? '开' : '关' }}</button>
           <span>小地图</span><button class="mc-btn small" :class="{ active: st.showMinimap }" @click="st.showMinimap = !st.showMinimap; apply()">{{ st.showMinimap ? '开' : '关' }}</button>
         </div>
+        <div class="srow"><span>声音</span>
+          <button class="mc-btn small" :class="{ active: st.audio }" @click="st.audio = !st.audio; apply()">{{ st.audio ? '🔊 开' : '🔇 关' }}</button>
+          <span>音乐</span><button class="mc-btn small" :class="{ active: st.music }" @click="st.music = !st.music; apply()">{{ st.music ? '开' : '关' }}</button>
+          <span>音效</span><button class="mc-btn small" :class="{ active: st.sfx }" @click="st.sfx = !st.sfx; apply()">{{ st.sfx ? '开' : '关' }}</button>
+        </div>
+        <div class="srow"><span>音量</span><input type="range" min="0" max="1" step="0.05" v-model.number="st.volume" @input="apply" /> {{ Math.round(st.volume * 100) }}%</div>
         <div class="srow"><span>时间流速</span>
           <button v-for="s in [0, 0.5, 1, 3, 10]" :key="s" class="mc-btn small" :class="{ active: st.timeSpeed === s }" @click="st.timeSpeed = s; apply()">{{ s === 0 ? '暂停' : s + '×' }}</button>
         </div>
@@ -201,6 +207,7 @@
         <p>🚢 曲江夜游：在南湖码头或曲江池码头登船；🗼 大雁塔：塔底入口登塔；🚡 骊山索道：华清宫东侧上山。</p>
         <p>🍜 美食：回民街（泡馍、肉夹馍、凉皮、镜糕）、大唐不夜城（甑糕、柿子饼）、街头面馆（油泼面）。</p>
         <p>🏮 文化：明城墙、碑林书法、秦俑军阵、盛唐乐舞、丝绸之路、唐宫礼制与秦岭生态。</p>
+        <p>🔊 声音：背景古韵、天气、脚步、拍照和交通音效会随场景变化，可在“设置”中分别调整。</p>
       </div>
     </div>
   </div>
@@ -216,6 +223,7 @@ import { GRADE_INFO } from '../game/landmarks/index.js'
 import { WEATHERS } from '../game/sky.js'
 import { districtLabels } from '../game/map.js'
 import { project } from '../game/geo.js'
+import { audio } from '../game/audio.js'
 
 const ui = store.ui
 const st = store.save.settings
@@ -245,6 +253,8 @@ const lineColor = (l) => LINE_COLORS[l] || '#888'
 
 function apply() {
   persist()
+  if (st.audio) audio.unlock()
+  audio.applySettings()
   if (G.game) {
     G.game.applyQuality()
     G.game.sensitivity = st.sensitivity

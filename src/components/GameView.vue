@@ -1,6 +1,12 @@
 <template>
   <div class="gv">
     <div ref="host" class="host"></div>
+    <div class="scene-effects" :class="{ rain: hud.weather === 'rain', snow: hud.weather === 'typhoon', night: hud.night > 0.5, sprinting: hud.speed > 10 && !ui.photoMode }">
+      <div class="vignette"></div>
+      <div class="speed-lines"><i v-for="n in 14" :key="'s' + n" :style="{ '--i': n }"></i></div>
+      <div class="motes"><i v-for="m in motes" :key="m.x" :style="m.style"></i></div>
+      <div v-if="ui.effect" :key="ui.effect.id" class="fx-burst" :class="ui.effect.type"><i></i><b>✦</b></div>
+    </div>
 
     <template v-if="ready">
       <!-- 顶部信息 -->
@@ -52,6 +58,7 @@
         <button class="mc-btn small" @click="toggle('dex')">📖 图鉴<kbd>N</kbd></button>
         <button class="mc-btn small" @click="toggle('tasks')">📌 任务<kbd>J</kbd></button>
         <button class="mc-btn small" @click="toggle('settings')">⚙ 设置</button>
+        <button class="mc-btn small audio-toggle" @click="toggleAudio">{{ store.save.settings.audio ? '🔊' : '🔇' }}</button>
         <button class="mc-btn small" @click="toggle('help')">❓<kbd>H</kbd></button>
         <button v-if="ui.mobile && !ui.portrait && canFs" class="mc-btn small" @click="toggleFullscreen">{{ ui.fullscreen ? '⛶ 退出全屏' : '⛶ 全屏' }}</button>
       </div>
@@ -123,7 +130,7 @@
 
 <script setup>
 import { ref, computed, onBeforeUnmount, reactive } from 'vue'
-import { store } from '../game/store.js'
+import { store, persist, toast } from '../game/store.js'
 import { Game } from '../game/Game.js'
 import { G } from '../game/instance.js'
 import { FILTERS } from '../game/photo.js'
@@ -131,6 +138,7 @@ import { NOVICE, DAILY_POOL } from '../game/data.js'
 import { dailyProgress } from '../game/store.js'
 import { METRO_STATIONS } from '../game/geo.js'
 import Panels from './Panels.vue'
+import { audio } from '../game/audio.js'
 
 const host = ref(null)
 const mini = ref(null)
@@ -143,6 +151,13 @@ const fov = ref(55)
 const pose = ref('pose')
 const views = [{ id: 'third', n: '第三人称' }, { id: 'first', n: '第一人称' }, { id: 'selfie', n: '自拍' }]
 const poses = [{ id: 'pose', n: '✌ 比耶' }, { id: 'wave', n: '👋 挥手' }, { id: 'idle', n: '🧍 站立' }, { id: 'photo', n: '📸 举相机' }]
+const motes = Array.from({ length: 20 }, (_, i) => ({
+  x: i,
+  style: {
+    '--x': `${(i * 47) % 100}%`, '--y': `${15 + ((i * 31) % 80)}%`,
+    '--d': `${6 + (i % 7)}s`, '--delay': `${-(i % 9)}s`, '--size': `${2 + (i % 3)}px`
+  }
+}))
 let mmTimer = null
 
 const isFirst = computed(() => G.game && G.game.player && G.game.player.view === 'first' && hud.fps >= 0)
@@ -231,6 +246,14 @@ document.addEventListener('webkitfullscreenchange', onFsChange)
 function toggle(p) {
   ui.panel = ui.panel === p ? null : p
   if (ui.panel) G.game.input.exitLock()
+}
+function toggleAudio() {
+  const st = store.save.settings
+  st.audio = !st.audio
+  if (st.audio) audio.unlock()
+  audio.applySettings()
+  persist()
+  toast(st.audio ? '🔊 长安环境音与音乐已开启' : '🔇 声音已关闭')
 }
 function act(k) {
   const g = G.game
@@ -388,6 +411,26 @@ onBeforeUnmount(() => {
 .gv { position: fixed; inset: 0; }
 .host { position: absolute; inset: 0; }
 .host :deep(canvas) { display: block; width: 100%; height: 100%; }
+.scene-effects { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
+.vignette { position: absolute; inset: -1px; box-shadow: inset 0 0 110px rgba(8,10,18,0.16); transition: box-shadow 1s, background 1s; }
+.scene-effects.night .vignette { box-shadow: inset 0 0 150px rgba(4,6,18,0.4); background: radial-gradient(circle at 50% 38%, transparent 42%, rgba(10,12,35,0.12)); }
+.scene-effects.rain .vignette { box-shadow: inset 0 0 140px rgba(20,40,65,0.42); background: linear-gradient(110deg, rgba(110,160,210,0.06), transparent 35%, rgba(110,160,210,0.05)); }
+.scene-effects.snow .vignette { box-shadow: inset 0 0 140px rgba(210,230,255,0.2); background: radial-gradient(circle at 50% 45%, rgba(220,235,255,0.06), rgba(120,150,200,0.12)); }
+.motes i { position: absolute; left: var(--x); top: var(--y); width: var(--size); height: var(--size); border-radius: 50%; background: #ffd97a; opacity: 0.22; box-shadow: 0 0 8px #ffb84a; animation: mote var(--d) ease-in-out var(--delay) infinite alternate; }
+.scene-effects:not(.night) .motes i { opacity: 0.08; }
+.scene-effects.rain .motes, .scene-effects.snow .motes { display: none; }
+@keyframes mote { from { transform: translate3d(-8px, 12px, 0) scale(.7); } to { transform: translate3d(18px, -30px, 0) scale(1.35); opacity: .45; } }
+.speed-lines { position: absolute; inset: 0; opacity: 0; transition: opacity .18s; }
+.sprinting .speed-lines { opacity: .42; }
+.speed-lines i { position: absolute; left: calc((var(--i) * 7%) - 4%); top: calc((var(--i) * 29%) - 280%); width: 2px; height: 42vh; transform: rotate(-28deg); background: linear-gradient(transparent, rgba(255,255,255,.75), transparent); animation: streak .62s linear infinite; animation-delay: calc(var(--i) * -.06s); }
+@keyframes streak { from { translate: 0 -40vh; } to { translate: 18vw 115vh; } }
+.fx-burst { position: absolute; left: 50%; top: 45%; width: 40px; height: 40px; transform: translate(-50%,-50%); }
+.fx-burst i { position: absolute; inset: 0; border: 4px solid #ffd75a; border-radius: 50%; animation: burst-ring .85s ease-out forwards; box-shadow: 0 0 24px #ffc24c; }
+.fx-burst b { position: absolute; inset: -12px; display: grid; place-items: center; color: #fff2a0; font-size: 52px; text-shadow: 0 0 18px #ffb52e; animation: burst-star .85s ease-out forwards; }
+.fx-burst.reward i { border-color: #65ef8a; box-shadow: 0 0 25px #45d96c; }
+.fx-burst.time i { border-color: #75cfff; box-shadow: 0 0 25px #4aaeff; }
+@keyframes burst-ring { from { transform: scale(.25); opacity: 1; } to { transform: scale(8); opacity: 0; } }
+@keyframes burst-star { 0% { transform: scale(.3) rotate(0); opacity: 0; } 35% { transform: scale(1.25) rotate(25deg); opacity: 1; } 100% { transform: scale(2) rotate(70deg); opacity: 0; } }
 .hud-tl { position: absolute; left: 12px; top: 12px; display: flex; flex-direction: column; gap: 8px; max-width: min(360px, 60vw); pointer-events: none; }
 .loc { padding: 8px 12px; }
 .dist { font-size: 18px; font-weight: 800; color: var(--accent); text-shadow: 2px 2px 0 #000; }

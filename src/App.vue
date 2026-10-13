@@ -16,6 +16,7 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 import { store } from './game/store.js'
+import { audio } from './game/audio.js'
 import Menu from './components/Menu.vue'
 import GameView from './components/GameView.vue'
 
@@ -30,11 +31,14 @@ const TIPS = [
   '小贴士：在地铁口按 E 可以快速传送到其他站点。',
   '小贴士：和路人聊天可以完成每日任务“找到5个NPC”。',
   '小贴士：曲江夜游可在南湖码头或曲江池码头登船。',
-  '小贴士：回民街泡馍要自己慢慢掰，掰得细更入味。'
+  '小贴士：回民街泡馍要自己慢慢掰，掰得细更入味。',
+  '小贴士：建议开启声音，脚步、天气、交通与长安古韵会随场景变化。'
 ]
 const tip = ref(TIPS[0])
 
 async function startGame(spawn) {
+  // 在用户点击“开始/继续”的手势内解锁浏览器音频。
+  audio.unlock()
   loading.value = true
   progress.value = 0
   tip.value = TIPS[Math.floor(Math.random() * TIPS.length)]

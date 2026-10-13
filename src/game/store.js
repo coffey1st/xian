@@ -23,7 +23,10 @@ function defaultSave() {
     districts: [],
     stats: { photos: 0, walk: 0, bus: 0, metro: 0, cruise: 0 },
     daily: { date: '', ids: [], progress: {}, done: {} },
-    settings: { quality: 'high', reflect: true, shadows: true, timeSpeed: 1, sensitivity: 1, showMinimap: true },
+    settings: {
+      quality: 'high', reflect: true, shadows: true, timeSpeed: 1, sensitivity: 1, showMinimap: true,
+      audio: true, music: true, sfx: true, volume: 0.75
+    },
     lastPos: null
   }
 }
@@ -47,10 +50,11 @@ export const store = reactive({
     prompt: null,
     toasts: [],
     banner: null,
-    hud: { district: '', place: '', time: '09:00', period: '早晨', weather: 'sunny', weatherName: '晴天', weatherIcon: '☀️', fps: 0, heading: 0, ride: null, loading: 0 },
+    hud: { district: '', place: '', time: '09:00', period: '早晨', weather: 'sunny', weatherName: '晴天', weatherIcon: '☀️', fps: 0, heading: 0, ride: null, loading: 0, speed: 0, night: 0 },
     dialog: null,
     shop: null,
     flash: false,
+    effect: null,
     lastPhoto: null,
     fade: false,
     fadeText: '',

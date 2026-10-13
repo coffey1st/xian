@@ -17,6 +17,7 @@ import { store, events, toast, banner, persist, checkTasks, ensureDaily } from '
 import { SHOPS, FOODS, SOUVENIRS, CULTURE } from './data.js'
 import { formatTime, smooth, lerp, clamp } from './util.js'
 import { renderBaseMap } from './map.js'
+import { audio } from './audio.js'
 
 const TOWER = { DECK_Y: 33, RESTAURANT_Y: 24, CORE: [3, 3] }
 
@@ -51,9 +52,12 @@ export class Game {
     this.world = new CollisionWorld()
     this.interact = new InteractRegistry()
     this.input = new Input(this.canvas)
+    this.audio = audio
+    this.audio.unlock()
     this.sky = new SkySystem(this.scene, this.renderer)
     this.sky.onWeatherChange = (w) => {
       const W = WEATHERS[w]
+      this.audio.weather(w)
       toast(`${W.icon} 天气变化：${W.name}`, w === 'typhoon' ? 'warn' : 'info')
       if (w === 'typhoon') banner('❄️ 降雪提示', '古城落雪，路面湿滑，请慢慢游览')
     }
@@ -88,10 +92,14 @@ export class Game {
     this.waypointMesh = this.makeWaypoint()
     this.scene.add(this.waypointMesh)
     this.walkAcc = 0
+    this.stepAcc = 0
 
     this.input.onKey = (code) => this.onKey(code)
     this.onBusArrive = (st) => {
-      if (this.player.ride && this.player.ride.type === 'bus') toast(`🚌 到站：${st.name}站（按 E 下车）`, 'info', 5000)
+      if (this.player.ride && this.player.ride.type === 'bus') {
+        this.audio.transport('bus')
+        toast(`🚌 到站：${st.name}站（按 E 下车）`, 'info', 5000)
+      }
     }
     this._resize = () => this.resize()
     window.addEventListener('resize', this._resize)
@@ -232,6 +240,7 @@ export class Game {
     window.removeEventListener('resize', this._resize)
     this.ro.disconnect()
     this.input.dispose()
+    this.audio.dispose()
     this.renderer.dispose()
     this.canvas.remove()
   }
@@ -242,6 +251,7 @@ export class Game {
     const blocking = !!ui.panel || !!ui.dialog || ui.fade
     this.input.enabled = !blocking
     const p = this.player
+    const wasGrounded = p.onGround
     p.sensitivity = store.save.settings.sensitivity || 1
     // 天空/天气
     const skyRes = this.sky.update(dt, this.camera, p.pos)
@@ -262,11 +272,21 @@ export class Game {
     const moved = Math.hypot(p.pos.x - prevPos.x, p.pos.z - prevPos.z)
     if (!p.ride && !p.scripted && moved < 5) {
       this.walkAcc += moved * 2.5
+      if (p.onGround && moved > 0.001) {
+        this.stepAcc += moved
+        const stride = p.speed > 10 ? 1.65 : 1.2
+        if (this.stepAcc >= stride) {
+          this.stepAcc %= stride
+          this.audio.step(p.speed > 10)
+        }
+      }
       if (this.walkAcc > 50) {
         events.count('walk', Math.round(this.walkAcc))
         this.walkAcc = 0
       }
     }
+    if (wasGrounded && !p.onGround && p.vy > 4) this.audio.jump()
+    if (!wasGrounded && p.onGround) this.audio.land()
     // 世界流式加载
     this.landmarks.update(dt, this.time, p.pos.x, p.pos.z, night, 1)
     this.city.update(p.pos.x, p.pos.z, 1)
@@ -274,6 +294,7 @@ export class Game {
     const boat = this.transport.update(dt, p.pos.x, p.pos.z)
     if (boat === 'done' && p.ride && p.ride.type === 'cruise') this.endCruise()
     this.water.update(this.time, this.camera, this.scene.fog, night)
+    this.audio.update({ weather: this.sky.weather, night, speed: p.speed, ride: p.ride && p.ride.type })
     // 相机
     this.fovTarget = ui.photoMode ? this.photoFov || 55 : 65
     this.camera.fov += (this.fovTarget - this.camera.fov) * Math.min(1, dt * 8)
@@ -321,6 +342,8 @@ export class Game {
     h.weatherIcon = this.sky.night > 0.5 && this.sky.weather === 'sunny' ? '🌙' : WEATHERS[this.sky.weather].icon
     h.fps = Math.round(1 / Math.max(0.001, dt))
     h.heading = this.player.camYaw
+    h.speed = p.speed
+    h.night = this.sky.night
     h.x = p.pos.x
     h.z = p.pos.z
     h.alt = Math.round(p.pos.y * 2.5)
@@ -354,10 +377,19 @@ export class Game {
       if (Math.abs(it.x - p.pos.x) > R || Math.abs(it.z - p.pos.z) > R) continue
       if (Math.hypot(it.x - p.pos.x, it.z - p.pos.z) < R) {
         if (events.discover(it.def.id)) {
+          this.audio.discover()
+          this.triggerEffect('discover', 900)
           banner(`📍 发现新景点：${it.def.name}`, `${it.def.grade}级 · ${DISTRICTS[it.def.district].name} · 按 C 拍照收集`)
         }
       }
     }
+  }
+  triggerEffect(type, ms = 700) {
+    const fx = { type, id: Math.random() }
+    store.ui.effect = fx
+    setTimeout(() => {
+      if (store.ui.effect && store.ui.effect.id === fx.id) store.ui.effect = null
+    }, ms)
   }
   updateInteractions() {
     const ui = store.ui
@@ -404,6 +436,7 @@ export class Game {
     }
     const panels = { KeyM: 'map', KeyB: 'bag', KeyP: 'album', KeyN: 'dex', KeyJ: 'tasks', KeyH: 'help' }
     if (panels[code]) {
+      this.audio.ui()
       ui.panel = ui.panel === panels[code] ? null : panels[code]
       if (ui.panel) this.input.exitLock()
       return
@@ -421,6 +454,8 @@ export class Game {
     } else if (code === 'KeyT') {
       // 快速时间：跳到下一个时段
       this.sky.hour = (Math.floor(this.sky.hour / 6) * 6 + 6) % 24 + 0.5
+      this.audio.discover()
+      this.triggerEffect('time', 850)
       toast(`⏰ 时间跳转到 ${formatTime(this.sky.hour)}`)
     }
   }
@@ -428,6 +463,7 @@ export class Game {
   togglePhoto(v) {
     const ui = store.ui
     const on = v != null ? v : !ui.photoMode
+    this.audio.ui()
     ui.photoMode = on
     if (on) {
       this.prevView = this.player.view
@@ -452,6 +488,7 @@ export class Game {
   }
   shutter() {
     if (!store.ui.photoMode || this.captureReq) return
+    this.audio.shutter()
     this.captureReq = { view: store.ui.photoView, filter: store.ui.filter }
   }
   finishCapture(req) {
@@ -487,6 +524,7 @@ export class Game {
     if (d && d.onClose) d.onClose()
   }
   doInteract() {
+    this.audio.interact()
     const p = this.player
     if (p.ride) {
       if (p.ride.type === 'bus') {
@@ -582,10 +620,15 @@ export class Game {
     const item = FOODS[id] || SOUVENIRS[id]
     const price = item.price || 0
     if (store.save.money < price) return toast('💸 钱不够了，完成任务可以获得奖励', 'warn')
-    if (events.buy(id, price)) toast(`购买成功：${item.icon} ${item.name}  -¥${price}`)
+    if (events.buy(id, price)) {
+      this.audio.purchase()
+      this.triggerEffect('reward', 750)
+      toast(`购买成功：${item.icon} ${item.name}  -¥${price}`)
+    }
   }
   // ---------- 地铁 ----------
   metroTravel(st) {
+    this.audio.transport('metro')
     store.ui.panel = null
     const from = store.ui.metroFrom
     if (from && from.id === st.id) return
@@ -617,6 +660,7 @@ export class Game {
       p.view = 'third'
       p.camDist = 9
       events.count('bus')
+      this.audio.transport('bus')
       toast('🚌 已上车（¥2）。到站后按 E 下车')
     } else {
       const eta = this.transport.busETA(stop)
@@ -636,6 +680,7 @@ export class Game {
     this.closeDialog()
     if (store.save.money < 60) return toast('船票需要 ¥60', 'warn')
     store.save.money -= 60
+    this.audio.transport('cruise')
     this.cruisePier = PIERS.find((x) => x.id === it.pier)
     this.fade('🚢 登船中…', () => {
       const boat = this.transport.startCruise(this.cruisePier)
@@ -663,6 +708,7 @@ export class Game {
   // ---------- 大雁塔登塔 ----------
   rideElevator(targetY) {
     this.closeDialog()
+    this.audio.transport('elevator')
     const tw = this.landmarks.byId.cantontower
     const cx = tw.x, cz = tw.z + TOWER.CORE[1] + 1.3
     const p = this.player
@@ -698,6 +744,7 @@ export class Game {
     this.closeDialog()
     if (store.save.money < 25) return toast('票价 ¥25', 'warn')
     store.save.money -= 25
+    this.audio.transport('cable')
     const tr = this.transport
     const p = this.player
     const gd = tr.gondolas[0]
