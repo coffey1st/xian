@@ -6,6 +6,18 @@
 
 项目基于 Vue 3 + Three.js，纯前端运行，无需后端服务。
 
+## 在线预览
+
+**[打开 GitHub Pages，开始漫游方块长安](https://coffey1st.github.io/xian/)**
+
+建议使用最新版 Chrome、Edge 或 Safari 浏览器访问。首次加载 3D 场景可能需要几秒钟。
+
+## 项目声明
+
+本项目是由 AI 辅助完成的非官方复刻与二次创作，仅供学习、技术交流和娱乐体验，不用于盈利，也不代表原项目作者或任何相关机构。
+
+项目尊重原作者及相关权利人的合法权益。如本项目中的代码、设计、文字或其他内容存在侵权问题，请通过 [GitHub Issues](https://github.com/coffey1st/xian/issues) 联系；收到并核实后，将立即停止访问并下架相关内容。
+
 ## 核心内容
 
 - 西安城市地图：碑林、莲湖、新城、雁塔、未央、临潼、长安、灞桥八大区域。
@@ -30,7 +42,7 @@ npm run build
 npm run preview
 ```
 
-Vite 使用相对路径构建，`dist/` 可部署到静态托管。
+Vite 使用相对路径构建，生产文件输出到 `docs/`，由 GitHub Pages 直接托管。
 
 ## 操作
 
